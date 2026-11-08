@@ -22,7 +22,7 @@ TripSplit Planner is a production-ready MERN (MongoDB, Express, React, Node.js) 
 
 ### Frontend (`client/`)
 - React 18 + Vite 7 (JavaScript)
-- React Router v6
+- React Router v7
 - TanStack Query v5 for server-state caching and invalidation
 - React Hook Form + Zod schema validation
 - Tailwind CSS v3 + Lucide React icons
@@ -41,8 +41,8 @@ TripSplit Planner is a production-ready MERN (MongoDB, Express, React, Node.js) 
 ### Testing & Tooling
 - npm Workspaces (`client`, `server`)
 - ESLint v9 flat config
-- Vitest + Supertest + `mongodb-memory-server` (backend unit & API integration tests)
-- Vitest + React Testing Library + `jsdom` (frontend component & routing tests)
+- Vitest 5 + Supertest + `mongodb-memory-server` (backend unit & API integration tests)
+- Vitest 5 + React Testing Library + `jsdom` (frontend component & routing tests)
 - Playwright (real Chromium browser end-to-end multi-user & mobile tests)
 
 ---
@@ -60,7 +60,7 @@ TripSplit Planner is a production-ready MERN (MongoDB, Express, React, Node.js) 
 
 ## Prerequisites
 
-- **Node.js** `>= 20.0.0` (verified on `v24.21.0`)
+- **Node.js** 22.12+ or 24 LTS (Node 24 recommended; Vitest 5 requires a supported Node version)
 - **npm** `>= 10.0.0`
 - **MongoDB Atlas** cluster URI (recommended for production/shared persistence) or local `mongod` (note: in local development without `MONGODB_URI`, the server automatically launches a persistent embedded `mongod` instance backed by `.data/mongodb` if `ALLOW_EMBEDDED_MONGO=true`).
 - **Google Chrome** or Playwright Chromium for running browser E2E tests.
