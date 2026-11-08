@@ -9,13 +9,13 @@ const objectIdString = z
 
 const isoDateTimeSchema = z.preprocess(
   (val) => (typeof val === 'string' || val instanceof Date ? new Date(val) : val),
-  z.date({ invalid_type_error: 'Invalid timestamp.' })
+  z.date({ error: 'Invalid timestamp.' })
 );
 
 export const createActivitySchema = z
   .object({
     title: z
-      .string({ required_error: 'Activity title is required.' })
+      .string({ error: (issue) => issue.input === undefined ? 'Activity title is required.' : undefined })
       .trim()
       .min(2, 'Activity title must be at least 2 characters.')
       .max(140, 'Activity title cannot exceed 140 characters.'),

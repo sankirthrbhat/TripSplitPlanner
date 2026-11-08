@@ -1,10 +1,13 @@
 import { expect, test } from '@playwright/test';
+import { randomBytes } from 'node:crypto';
 
 test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
   const uniqueSuffix = Date.now();
   const ownerEmail = `aarav.e2e.${uniqueSuffix}@example.com`;
   const memberEmail = `diya.e2e.${uniqueSuffix}@example.com`;
   const outsiderEmail = `outsider.e2e.${uniqueSuffix}@example.com`;
+  const password = randomBytes(24).toString('base64url') + 'A7';
+  const tripTitle = `DISPOSABLE CIA-2 Browser QA ${uniqueSuffix}`;
 
   let ownerContext;
   let memberContext;
@@ -38,7 +41,8 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     });
     page.on('response', (res) => {
       if (res.status() >= 500) {
-        serverErrors.push(`[${label}] ${res.status()} ${res.url()}`);
+        const safeUrl = res.url().replace(/\/(invite|invitations)\/[^/?]+/g, '/$1/[redacted]');
+        serverErrors.push(`[${label}] ${res.status()} ${safeUrl}`);
       }
     });
   }
@@ -80,7 +84,7 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     await ownerPage.goto('/register');
     await ownerPage.getByLabel(/full name/i).fill('Aarav E2E');
     await ownerPage.getByLabel(/email address/i).fill(ownerEmail);
-    await ownerPage.getByLabel(/^password/i).fill('StrongPass123');
+    await ownerPage.getByLabel(/^password/i).fill(password);
     await ownerPage.getByRole('button', { name: /create account/i }).click();
 
     await expect(ownerPage).toHaveURL(/\/trips$/);
@@ -101,6 +105,9 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     expect(sessionCookie).toBeDefined();
     expect(sessionCookie.httpOnly).toBe(true);
     expect(sessionCookie.sameSite).toBe('Lax');
+    if (process.env.PLAYWRIGHT_BASE_URL?.startsWith('https://')) {
+      expect(sessionCookie.secure).toBe(true);
+    }
   });
 
   test('03. Logout clears session cookie and re-login restores workspace', async () => {
@@ -118,7 +125,7 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     await expect(ownerPage).toHaveURL(/\/login\?redirect=%2Ftrips/);
 
     await ownerPage.getByLabel(/email address/i).fill(ownerEmail);
-    await ownerPage.getByLabel(/^password/i).fill('StrongPass123');
+    await ownerPage.getByLabel(/^password/i).fill(password);
     await ownerPage.getByRole('button', { name: /sign in/i }).click();
 
     await expect(ownerPage).toHaveURL(/\/trips$/);
@@ -129,7 +136,7 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     await ownerPage.getByRole('link', { name: /plan your first trip/i }).click();
     await expect(ownerPage).toHaveURL(/\/trips\/new$/);
 
-    await ownerPage.getByLabel(/trip title/i).fill('Munnar Tea Hills E2E');
+    await ownerPage.getByLabel(/trip title/i).fill(tripTitle);
     await ownerPage.getByLabel(/destination/i).fill('Munnar, Kerala');
     await ownerPage.getByLabel(/start date/i).fill('2026-12-20');
     await ownerPage.getByLabel(/end date/i).fill('2026-12-18');
@@ -148,7 +155,7 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     tripId = ownerPage.url().split('/trips/')[1];
 
     await expect(
-      ownerPage.getByRole('heading', { name: 'Munnar Tea Hills E2E' })
+      ownerPage.getByRole('heading', { name: tripTitle })
     ).toBeVisible();
     await expect(ownerPage.getByText('Trip Pulse Readiness')).toBeVisible();
   });
@@ -196,7 +203,7 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     await outsiderPage.goto('/register');
     await outsiderPage.getByLabel(/full name/i).fill('Vikram Outsider');
     await outsiderPage.getByLabel(/email address/i).fill(outsiderEmail);
-    await outsiderPage.getByLabel(/^password/i).fill('StrongPass123');
+    await outsiderPage.getByLabel(/^password/i).fill(password);
     await outsiderPage.getByRole('button', { name: /create account/i }).click();
     await expect(outsiderPage).toHaveURL(/\/trips$/);
 
@@ -225,13 +232,13 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     await memberPage.goto('/register');
     await memberPage.getByLabel(/full name/i).fill('Diya E2E');
     await memberPage.getByLabel(/email address/i).fill(memberEmail);
-    await memberPage.getByLabel(/^password/i).fill('StrongPass123');
+    await memberPage.getByLabel(/^password/i).fill(password);
     await memberPage.getByRole('button', { name: /create account/i }).click();
     await expect(memberPage).toHaveURL(/\/trips$/);
 
     await memberPage.goto(inviteFullUrl);
     await expect(
-      memberPage.getByRole('heading', { name: 'Munnar Tea Hills E2E' })
+      memberPage.getByRole('heading', { name: tripTitle })
     ).toBeVisible();
     await expect(memberPage.getByText(/invited by/i)).toContainText('Aarav E2E');
     await memberPage
@@ -443,18 +450,20 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     await expect(ownerPage.getByTestId('conflict-alert-panel')).toHaveCount(0);
   });
 
-  test('14. Mobile viewport (375x812) renders accessible drawer without horizontal overflow across views', async () => {
-    await ownerPage.setViewportSize({ width: 375, height: 812 });
-
-    for (const subPath of ['', '/itinerary', '/bookings', '/tasks', '/expenses', '/members']) {
-      await ownerPage.goto(`/trips/${tripId}${subPath}`);
-      await ownerPage.waitForLoadState('networkidle');
-      const overflow = await ownerPage.evaluate(
-        () => document.documentElement.scrollWidth - window.innerWidth
-      );
-      expect(overflow, `Horizontal overflow on ${subPath || 'overview'}`).toBeLessThanOrEqual(4);
+  test('14. Mobile and tablet layouts render every workspace tab without horizontal overflow', async () => {
+    for (const viewport of [{ width: 375, height: 812 }, { width: 768, height: 1024 }]) {
+      await ownerPage.setViewportSize(viewport);
+      for (const subPath of ['', '/itinerary', '/bookings', '/tasks', '/expenses', '/members', '/settings']) {
+        await ownerPage.goto(`/trips/${tripId}${subPath}`);
+        await ownerPage.waitForLoadState('networkidle');
+        const overflow = await ownerPage.evaluate(
+          () => document.documentElement.scrollWidth - window.innerWidth
+        );
+        expect(overflow, `${viewport.width}px overflow on ${subPath || 'overview'}`).toBeLessThanOrEqual(4);
+      }
     }
 
+    await ownerPage.setViewportSize({ width: 375, height: 812 });
     const mobileMenuButton = ownerPage.getByRole('button', {
       name: /open menu/i,
     });

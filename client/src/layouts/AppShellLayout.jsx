@@ -33,7 +33,7 @@ export function AppShellLayout() {
               <span className="text-base sm:text-lg">TripSplit Planner</span>
             </Link>
 
-            <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1">
+            <nav aria-label="Primary navigation" className="hidden lg:flex items-center gap-1">
               <NavLink
                 to="/trips"
                 end
@@ -62,7 +62,7 @@ export function AppShellLayout() {
             </nav>
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-4">
             <Link
               to="/trips/new"
               className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-500"
@@ -74,9 +74,9 @@ export function AppShellLayout() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-700 text-xs font-semibold text-white">
                 {getInitials(user?.displayName)}
               </div>
-              <div className="text-left leading-tight">
-                <p className="text-sm font-medium text-white">{user?.displayName}</p>
-                <p className="text-xs text-slate-400">{user?.email}</p>
+              <div className="min-w-0 max-w-44 text-left leading-tight">
+                <p className="truncate text-sm font-medium text-white">{user?.displayName}</p>
+                <p className="truncate text-xs text-slate-400">{user?.email}</p>
               </div>
             </div>
             <button
@@ -95,14 +95,14 @@ export function AppShellLayout() {
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="md:hidden rounded-lg p-2 text-slate-200 hover:bg-navy-800"
+            className="lg:hidden rounded-lg p-2 text-slate-200 hover:bg-navy-800"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
         {mobileMenuOpen ? (
-          <div className="md:hidden border-t border-navy-800 bg-navy-900 px-4 py-4 space-y-3">
+          <div className="lg:hidden border-t border-navy-800 bg-navy-900 px-4 py-4 space-y-3">
             <div className="flex items-center gap-3 pb-3 border-b border-navy-800">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-700 text-xs font-semibold text-white">
                 {getInitials(user?.displayName)}

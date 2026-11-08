@@ -14,12 +14,12 @@ const objectIdString = z
 const optionalDateSchema = z.preprocess((val) => {
   if (val === undefined || val === null || val === '') return new Date();
   return new Date(val);
-}, z.date({ invalid_type_error: 'Invalid expense date.' }));
+}, z.date({ error: 'Invalid expense date.' }));
 
 const customShareEntrySchema = z.object({
   userId: objectIdString,
   shareMinor: z
-    .number({ invalid_type_error: 'Share amount must be a number in paise.' })
+    .number({ error: 'Share amount must be a number in paise.' })
     .int('Share amount must be an integer in paise.')
     .min(0, 'Share amount cannot be negative.'),
 });
@@ -27,15 +27,16 @@ const customShareEntrySchema = z.object({
 export const createExpenseSchema = z
   .object({
     title: z
-      .string({ required_error: 'Expense title is required.' })
+      .string({ error: (issue) => issue.input === undefined ? 'Expense title is required.' : undefined })
       .trim()
       .min(2, 'Expense title must be at least 2 characters.')
       .max(140),
     description: z.string().trim().max(1000).optional().default(''),
     amountMinor: z
       .number({
-        required_error: 'Expense amount is required.',
-        invalid_type_error: 'Expense amount must be a number in paise.',
+        error: (issue) => issue.input === undefined
+          ? 'Expense amount is required.'
+          : 'Expense amount must be a number in paise.',
       })
       .int('Expense amount must be an integer in paise (no fractional paise).')
       .positive('Expense amount must be greater than zero.')
@@ -82,7 +83,7 @@ export const updateExpenseSchema = z.object({
   title: z.string().trim().min(2).max(140).optional(),
   description: z.string().trim().max(1000).optional(),
   amountMinor: z
-    .number({ invalid_type_error: 'Expense amount must be a number in paise.' })
+    .number({ error: 'Expense amount must be a number in paise.' })
     .int('Expense amount must be an integer in paise.')
     .positive('Expense amount must be greater than zero.')
     .max(10000000000)

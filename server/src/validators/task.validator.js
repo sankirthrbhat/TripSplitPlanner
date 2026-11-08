@@ -11,11 +11,11 @@ const optionalDateSchema = z.preprocess((val) => {
   if (val === undefined) return undefined;
   if (val === null || val === '') return null;
   return new Date(val);
-}, z.date({ invalid_type_error: 'Invalid due date.' }).nullable().optional());
+}, z.date({ error: 'Invalid due date.' }).nullable().optional());
 
 export const createTaskSchema = z.object({
   title: z
-    .string({ required_error: 'Task title is required.' })
+    .string({ error: (issue) => issue.input === undefined ? 'Task title is required.' : undefined })
     .trim()
     .min(2, 'Task title must be at least 2 characters.')
     .max(140),

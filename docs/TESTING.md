@@ -33,3 +33,47 @@ npm run build
 npm run test:e2e
 ```
 
+# Security upgrade verification and live walkthrough
+
+Use Node 24 LTS (or another version supported by the root `engines` field).
+The security release upgrades Zod, React Router, the form resolver, and Vitest.
+
+```bash
+npm ci --include=dev
+npm run lint
+npm run build
+npm test
+npm audit
+npm run test:e2e
+```
+
+`npm test` always uses isolated MongoDB in test mode, even if a developer's
+environment contains an Atlas URI. Do not run production seeds.
+
+For the deployed application, explicit authorization is required because the
+browser suite creates three disposable accounts and a test trip, and exercises
+deletion only on its own newly created expense. It does not reset databases.
+
+PowerShell:
+
+```powershell
+$env:PLAYWRIGHT_BASE_URL = 'https://tripsplit-planner.onrender.com'
+$env:PLAYWRIGHT_ALLOW_LIVE = '1'
+npx playwright test
+Remove-Item Env:PLAYWRIGHT_BASE_URL
+Remove-Item Env:PLAYWRIGHT_ALLOW_LIVE
+```
+
+Live traces are disabled to avoid recording cookies and invitation tokens.
+Passwords are randomly generated per run. Test trips are prefixed
+`DISPOSABLE CIA-2 Browser QA`. The 14 serial cases cover authenticated desktop
+flows plus all seven workspace tabs at 375px and 768px widths. They are separate
+named cases sharing one scenario; later cases depend on earlier setup.
+
+The default browser is installed Chrome. Runners may set
+`PLAYWRIGHT_CHANNEL=chromium` for an installed Playwright Chromium or
+`PLAYWRIGHT_EXECUTABLE_PATH` for an official compatible Chrome/headless-shell
+executable. These options never change the production service.
+
+---
+

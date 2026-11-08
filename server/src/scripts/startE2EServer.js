@@ -7,7 +7,9 @@ let mongod;
 let server;
 
 async function start() {
-  mongod = await MongoMemoryServer.create();
+  mongod = await MongoMemoryServer.create({
+    instance: { args: process.platform === 'win32' ? [] : ['--nounixsocket'] },
+  });
   const uri = mongod.getUri('tripsplit_e2e');
   await connectDB(uri);
 
