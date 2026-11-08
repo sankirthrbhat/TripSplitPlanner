@@ -24,7 +24,7 @@ Audit date: 8 November 2026. Repository: https://github.com/sankirthrbhat/TripSp
 5. Fixed tablet navigation overflow at 768px by switching to the drawer below the large-screen breakpoint and constraining account text.
 6. Added guarded live Playwright execution, random disposable account passwords, disabled live traces, and broader phone/tablet checks.
 7. **Live-only defect found and fixed:** an owner could open Add Expense before the current ledger roster arrived. Cached trip metadata could omit a newly joined collaborator from the default equal split. Creation and simulation now wait for current roster data; the simulator initializes from that roster; loading/retry feedback is provided. The E2E suite deliberately holds the ledger request and verifies both participants' shares before saving.
-8. Added an optional frontend-only Antigravity polish prompt at `docs/ANTIGRAVITY_UI_POLISH_PROMPT.md`.
+8. Drafted a temporary frontend UI-polish specification (since applied on `ui/travel-polish`, merged into `master`, and the temporary prompt file removed).
 
 All uploaded source files were compared with the locally tested Git blob hashes before merging. Existing history was preserved through pull requests. No production seed/reset, database-user changes, paid resources, duplicate services, or broad network allowlist were introduced in this follow-up.
 
@@ -141,12 +141,12 @@ Only generated disposable test accounts/trips were used. Test records remain in 
 - [x] Audited source merged to GitHub `master` with history preserved.
 - [x] Existing Render service live and connected to Atlas `tripsplit`.
 - [x] Final functional, authentication, mobile/tablet, and dependency checks completed.
-- [x] README, architecture/API/testing/demo guides, and optional UI-polish prompt available.
+- [x] README, architecture, API, testing, demo, and audit documentation available.
 - [ ] In your Antigravity checkout, commit or stash any personal local edits, then run `git checkout master` and `git pull --ff-only origin master` before packaging or recording.
 - [ ] Submit the GitHub repository and live URL, plus your university's required report, ER diagram, screenshots, and demo video. Include your name, roll number, class/section, and CIA-2 details where required.
 - [ ] Follow `docs/DEMO.md`; use your own demo account or newly created disposable data. Do not put secrets in your recording or submission archive.
 - [ ] Ensure any source ZIP excludes real `.env`, `.data`, node_modules, test traces, and generated build/test artifacts.
 - [ ] Open the live site before the demonstration to warm Render. Explain conflict detection, integer-paise rounding, and planned-versus-paid settlement behavior.
-- [ ] Keep optional UI polish on `ui/travel-polish`; rerun checks before merging it. The current verified version can be submitted without redesign.
+- [x] Warm travel-notebook UI refinements implemented on `ui/travel-polish`, verified across lint/build/unit/E2E checks, and merged into `master`.
 
-The optional UI prompt specifies a warm travel-notebook theme, teal/coral accents, welcoming trip cards, a clear itinerary timeline, careful financial presentation, reduced-motion support, accessibility, mobile controls, and strict preservation of backend/authentication/financial behavior. Use an available capable Antigravity model with High reasoning and Planning mode; model availability depends on your account. No new UI redesign was applied during the security audit.
+The applied travel-notebook UI refinements implement a warm off-white palette, teal/coral/sunshine accents, travel-ticket trip cards, a vertical itinerary timeline, responsive financial presentation, reduced-motion support, accessibility improvements, and mobile navigation controls while strictly preserving backend, authentication, conflict-detection, and integer-paise financial behavior.
