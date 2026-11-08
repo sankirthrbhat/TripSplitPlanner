@@ -201,25 +201,59 @@ export const acceptInvitation = asyncHandler(async (req, res) => {
     );
   }
 
-  trip.members.push({
-    userId: req.user._id,
-    role: 'member',
-    joinedAt: new Date(),
-  });
+  // Atomically claim the single-use invitation. A read-then-save check is racy: two
+  // concurrent requests could both observe status === 'pending' and both join.
+  const claimed = await Invitation.findOneAndUpdate(
+    { _id: invitation._id, status: 'pending' },
+    {
+      $set: {
+        status: 'accepted',
+        acceptedBy: req.user._id,
+        acceptedAt: new Date(),
+      },
+    },
+    { new: true }
+  );
+  if (!claimed) {
+    throw new AppError(
+      'This invitation link has already been used.',
+      409,
+      'INVITATION_ALREADY_USED'
+    );
+  }
 
-  invitation.status = 'accepted';
-  invitation.acceptedBy = req.user._id;
-  invitation.acceptedAt = new Date();
+  // Guarded push so the same user can never be added twice.
+  const added = await Trip.updateOne(
+    { _id: trip._id, 'members.userId': { $ne: req.user._id } },
+    {
+      $push: {
+        members: { userId: req.user._id, role: 'member', joinedAt: new Date() },
+      },
+    }
+  );
+  if (added.modifiedCount !== 1) {
+    // Roll the claim back so the link is not burned by a user who is already a member.
+    await Invitation.updateOne(
+      { _id: invitation._id },
+      { $set: { status: 'pending' }, $unset: { acceptedBy: '', acceptedAt: '' } }
+    );
+    throw new AppError(
+      'You are already a member of this trip.',
+      409,
+      'ALREADY_TRIP_MEMBER',
+      { tripId: String(trip._id) }
+    );
+  }
 
-  await Promise.all([trip.save(), invitation.save()]);
-  const members = await getHydratedTripMembers(trip);
+  const updatedTrip = await Trip.findById(trip._id);
+  const members = await getHydratedTripMembers(updatedTrip);
 
   return res.status(200).json({
     success: true,
     data: {
-      tripId: String(trip._id),
+      tripId: String(updatedTrip._id),
       trip: {
-        ...trip.toJSON(),
+        ...updatedTrip.toJSON(),
         viewerRole: 'member',
         members,
       },

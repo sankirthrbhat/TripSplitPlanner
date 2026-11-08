@@ -3,7 +3,9 @@ import { env } from '../config/env.js';
 import { AppError } from '../utils/AppError.js';
 
 export function notFoundHandler(req, _res, next) {
-  if (req.path.startsWith('/api')) {
+  // This handler is mounted under app.use('/api', ...), where Express strips the
+  // mount path from req.path. Use req.originalUrl so the check actually matches.
+  if (req.originalUrl.startsWith('/api')) {
     return next(
       new AppError(`API route not found: ${req.method} ${req.originalUrl}`, 404, 'ROUTE_NOT_FOUND')
     );
@@ -80,6 +82,17 @@ export function errorHandler(err, _req, res, _next) {
       error: {
         code: 'MALFORMED_JSON',
         message: 'Malformed JSON payload.',
+      },
+    });
+  }
+
+  // Body-parser payload exceeds the configured limit
+  if (err?.type === 'entity.too.large') {
+    return res.status(413).json({
+      success: false,
+      error: {
+        code: 'PAYLOAD_TOO_LARGE',
+        message: 'Request body is too large.',
       },
     });
   }
