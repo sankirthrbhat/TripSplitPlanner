@@ -11,7 +11,7 @@ const optionalDateSchema = z.preprocess((val) => {
   if (val === undefined) return undefined;
   if (val === null || val === '') return null;
   return new Date(val);
-}, z.date({ invalid_type_error: 'Invalid date.' }).nullable().optional());
+}, z.date({ error: 'Invalid date.' }).nullable().optional());
 
 const safeHttpUrlSchema = z
   .string()
@@ -33,12 +33,12 @@ const safeHttpUrlSchema = z
 export const createBookingSchema = z
   .object({
     title: z
-      .string({ required_error: 'Booking title is required.' })
+      .string({ error: (issue) => issue.input === undefined ? 'Booking title is required.' : undefined })
       .trim()
       .min(2, 'Booking title must be at least 2 characters.')
       .max(140),
     provider: z
-      .string({ required_error: 'Provider or vendor name is required.' })
+      .string({ error: (issue) => issue.input === undefined ? 'Provider or vendor name is required.' : undefined })
       .trim()
       .min(1, 'Provider or vendor is required.')
       .max(140),

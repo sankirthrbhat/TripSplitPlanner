@@ -3,18 +3,18 @@ import { isValidIanaTimezone } from '../models/Trip.model.js';
 
 const dateStringSchema = z.preprocess(
   (val) => (typeof val === 'string' || val instanceof Date ? new Date(val) : val),
-  z.date({ invalid_type_error: 'Invalid date value.' })
+  z.date({ error: 'Invalid date value.' })
 );
 
 export const createTripSchema = z
   .object({
     title: z
-      .string({ required_error: 'Trip title is required.' })
+      .string({ error: (issue) => issue.input === undefined ? 'Trip title is required.' : undefined })
       .trim()
       .min(2, 'Trip title must be at least 2 characters.')
       .max(120, 'Trip title cannot exceed 120 characters.'),
     destination: z
-      .string({ required_error: 'Destination is required.' })
+      .string({ error: (issue) => issue.input === undefined ? 'Destination is required.' : undefined })
       .trim()
       .min(2, 'Destination must be at least 2 characters.')
       .max(120, 'Destination cannot exceed 120 characters.'),
@@ -28,7 +28,7 @@ export const createTripSchema = z
       .refine(isValidIanaTimezone, 'Invalid IANA timezone (e.g. Asia/Kolkata).'),
     currency: z.enum(['INR']).default('INR'),
     budgetLimitMinor: z
-      .number({ invalid_type_error: 'Budget must be a numeric amount in paise.' })
+      .number({ error: 'Budget must be a numeric amount in paise.' })
       .int('Budget must be an integer in paise.')
       .min(0, 'Budget cannot be negative.')
       .max(100000000000, 'Budget exceeds maximum supported limit.')
