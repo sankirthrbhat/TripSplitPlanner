@@ -56,6 +56,10 @@ export async function connectDB(customUri) {
       // Fallback if another local process already holds the wiredTiger lock on .data/mongodb
       memoryServer = await MongoMemoryServer.create();
       activeMode = 'embedded-ephemeral';
+      console.warn(
+        '[DB] WARNING: .data/mongodb is locked by another process. Using a TEMPORARY in-memory ' +
+          'database - data created in this session will be LOST on exit.'
+      );
     }
   }
 
@@ -72,6 +76,15 @@ export async function connectDB(customUri) {
 }
 
 export async function disconnectDB() {
+  if (mongoose.connection.readyState === 1 && activeMode === 'embedded-persistent') {
+    // Embedded mongod is terminated by mongodb-memory-server on stop(). Force a checkpoint
+    // first so writes made just before shutdown are durable on disk (restart persistence).
+    try {
+      await mongoose.connection.db.admin().command({ fsync: 1 });
+    } catch (err) {
+      console.warn('[DB] fsync before shutdown failed:', err.message);
+    }
+  }
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
   }

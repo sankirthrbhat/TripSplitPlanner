@@ -1,6 +1,7 @@
-import { connectDB, disconnectDB } from '../config/db.js';
+import { connectDB, disconnectDB, getDbStatus } from '../config/db.js';
 import { env } from '../config/env.js';
 import { DEMO_USERS, seedDemoWorkspace } from '../services/seed.service.js';
+import { assertSafeSeedTarget } from '../utils/seedGuard.js';
 
 async function runSeed() {
   if (env.NODE_ENV === 'production') {
@@ -8,7 +9,24 @@ async function runSeed() {
     process.exit(1);
   }
 
+  assertSafeSeedTarget(env.MONGODB_URI, {
+    allowRemote: process.env.ALLOW_REMOTE_SEED === 'true',
+  });
+
   await connectDB();
+
+  const { mode } = getDbStatus();
+  if (mode === 'embedded-ephemeral') {
+    // The persistent .data/mongodb is locked by another process (usually `npm run dev`).
+    // Seeding the throwaway in-memory fallback would "succeed" and then lose everything.
+    throw new Error(
+      'The persistent database (.data/mongodb) is in use by another process, so the seed would only ' +
+        'write to a temporary in-memory database and be lost. Stop `npm run dev` (or any other server ' +
+        'using this project) and run the seed again.'
+    );
+  }
+
+  console.log(`[Seed] Target database mode: ${mode}`);
   const { trip } = await seedDemoWorkspace();
 
   console.log('[Seed] Successfully seeded demo trip:');
@@ -27,4 +45,3 @@ runSeed().catch(async (err) => {
   await disconnectDB().catch(() => {});
   process.exit(1);
 });
-
