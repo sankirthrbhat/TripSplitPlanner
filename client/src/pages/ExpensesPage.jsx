@@ -775,7 +775,7 @@ export function ExpensesPage() {
         description="All amounts are stored in exact integer paise (INR)."
         maxWidth="max-w-xl"
       >
-        <form onSubmit={handleExpenseSubmit} noValidate className="space-y-4">
+        <form onSubmit={handleExpenseSubmit} noValidate className="space-y-3.5">
           {formError ? (
             <div
               role="alert"
@@ -882,7 +882,7 @@ export function ExpensesPage() {
           </FormField>
 
           {/* Split Mode & Participant Shares */}
-          <div className="rounded-2xl border border-canvas-border bg-[#FAF9F5] p-4 space-y-3">
+          <div className="rounded-2xl border border-canvas-border bg-[#FAF9F5] p-3.5 space-y-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-bold text-ink">
                 Split Configuration
@@ -891,7 +891,7 @@ export function ExpensesPage() {
                 <button
                   type="button"
                   onClick={() => setShareMode('equal')}
-                  className={`rounded-lg px-3 py-1.5 font-semibold transition-colors duration-150 ${
+                  className={`rounded-lg px-3 py-1.5 font-semibold ${
                     shareMode === 'equal'
                       ? 'bg-[#0F766E] text-white'
                       : 'text-ink-body hover:text-ink'
@@ -902,7 +902,7 @@ export function ExpensesPage() {
                 <button
                   type="button"
                   onClick={() => setShareMode('custom')}
-                  className={`rounded-lg px-3 py-1.5 font-semibold transition-colors duration-150 ${
+                  className={`rounded-lg px-3 py-1.5 font-semibold ${
                     shareMode === 'custom'
                       ? 'bg-[#0F766E] text-white'
                       : 'text-ink-body hover:text-ink'

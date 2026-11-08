@@ -259,7 +259,7 @@ export function MembersPage() {
       </div>
 
       {/* Invitation History */}
-      <Card className="p-5 sm:p-6 space-y-4">
+      <Card className="min-w-0 p-5 sm:p-6 space-y-4">
         <h3 className="text-sm font-bold text-ink">
           Invitation Log ({invitations.length})
         </h3>
@@ -273,11 +273,17 @@ export function MembersPage() {
               <thead>
                 <tr className="border-b border-canvas-border text-ink-body">
                   <th className="py-2 pr-3 font-semibold">Label / Email Hint</th>
-                  <th className="py-2 px-3 font-semibold">Created</th>
-                  <th className="py-2 px-3 font-semibold">Expires</th>
-                  <th className="py-2 px-3 font-semibold">Status</th>
+                  <th className="hidden sm:table-cell py-2 px-3 font-semibold whitespace-nowrap">
+                    Created
+                  </th>
+                  <th className="hidden sm:table-cell py-2 px-3 font-semibold whitespace-nowrap">
+                    Expires
+                  </th>
+                  <th className="py-2 px-3 font-semibold whitespace-nowrap">Status</th>
                   {isOwner ? (
-                    <th className="py-2 pl-3 font-semibold text-right">Action</th>
+                    <th className="py-2 pl-3 font-semibold text-right whitespace-nowrap">
+                      Action
+                    </th>
                   ) : null}
                 </tr>
               </thead>
@@ -285,19 +291,24 @@ export function MembersPage() {
                 {invitations.map((inv) => (
                   <tr key={inv.id}>
                     <td className="py-2.5 pr-3 font-semibold text-ink">
-                      {inv.label || inv.invitedEmail || 'General Trip Invite'}
+                      <span>
+                        {inv.label || inv.invitedEmail || 'General Trip Invite'}
+                      </span>
+                      <span className="block text-[11px] font-normal text-ink-muted tabular-nums sm:hidden">
+                        Exp {formatDate(inv.expiresAt, trip.timezone)}
+                      </span>
                     </td>
-                    <td className="py-2.5 px-3 text-ink-body tabular-nums">
+                    <td className="hidden sm:table-cell py-2.5 px-3 text-ink-body tabular-nums whitespace-nowrap">
                       {formatDate(inv.createdAt, trip.timezone)}
                     </td>
-                    <td className="py-2.5 px-3 text-ink-body tabular-nums">
+                    <td className="hidden sm:table-cell py-2.5 px-3 text-ink-body tabular-nums whitespace-nowrap">
                       {formatDate(inv.expiresAt, trip.timezone)}
                     </td>
-                    <td className="py-2.5 px-3">
+                    <td className="py-2.5 px-3 whitespace-nowrap">
                       <StatusBadge status={inv.effectiveStatus || inv.status} />
                     </td>
                     {isOwner ? (
-                      <td className="py-2.5 pl-3 text-right">
+                      <td className="py-2.5 pl-3 text-right whitespace-nowrap">
                         {inv.effectiveStatus === 'pending' ? (
                           <Button
                             size="sm"

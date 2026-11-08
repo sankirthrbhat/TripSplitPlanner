@@ -28,10 +28,10 @@ export function Modal({
       aria-labelledby="modal-title"
     >
       <div
-        className={`relative w-full ${maxWidth} rounded-2xl bg-white border border-canvas-border shadow-xl my-8 overflow-hidden`}
+        className={`relative w-full ${maxWidth} rounded-2xl bg-white border border-canvas-border shadow-xl my-4 overflow-hidden`}
       >
         <div className="h-1 w-full bg-gradient-to-r from-[#0F766E] via-sunshine to-coral" aria-hidden="true" />
-        <div className="flex items-start justify-between gap-3 border-b border-canvas-border px-6 py-4 bg-canvas/70">
+        <div className="flex items-start justify-between gap-3 border-b border-canvas-border px-5 py-3.5 sm:px-6 sm:py-4 bg-canvas/70">
           <div>
             <h2 id="modal-title" className="text-lg font-bold text-ink">
               {title}
@@ -49,7 +49,7 @@ export function Modal({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="p-6 max-h-[78vh] overflow-y-auto">{children}</div>
+        <div className="p-5 sm:p-6 max-h-[84vh] overflow-y-auto">{children}</div>
       </div>
     </div>
   );
