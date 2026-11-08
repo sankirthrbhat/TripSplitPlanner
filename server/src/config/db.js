@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import mongoose from 'mongoose';
 import { env } from './env.js';
+import { isLocalMongoUri } from '../utils/seedGuard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let memoryServer = null;
@@ -12,7 +13,7 @@ let activeMode = 'disconnected';
  * Connects Mongoose to MongoDB.
  * Priority:
  * 1. Explicit uri parameter (used by isolated tests or scripts)
- * 2. env.MONGODB_URI (MongoDB Atlas or local mongod)
+ * 2. env.MONGODB_URI outside test mode (tests never inherit a shared database)
  * 3. Embedded MongoDB binary via mongodb-memory-server (dev/test only when allowed)
  */
 export async function connectDB(customUri) {
@@ -20,7 +21,10 @@ export async function connectDB(customUri) {
     return mongoose.connection;
   }
 
-  const targetUri = customUri || env.MONGODB_URI;
+  if (env.NODE_ENV === 'test' && customUri && !isLocalMongoUri(customUri)) {
+    throw new Error('Test mode refuses a non-local MongoDB connection. Use an isolated test database.');
+  }
+  const targetUri = customUri || (env.NODE_ENV === 'test' ? '' : env.MONGODB_URI);
 
   if (targetUri) {
     await mongoose.connect(targetUri, {
@@ -39,7 +43,10 @@ export async function connectDB(customUri) {
   const { MongoMemoryServer } = await import('mongodb-memory-server');
 
   if (env.NODE_ENV === 'test') {
-    memoryServer = await MongoMemoryServer.create();
+    // Tests connect over TCP; avoid creating a /tmp Unix socket in restricted runners.
+    memoryServer = await MongoMemoryServer.create({
+      instance: { args: process.platform === 'win32' ? [] : ['--nounixsocket'] },
+    });
     activeMode = 'memory-test';
   } else {
     const dbPath = path.resolve(__dirname, '../../../.data/mongodb');
