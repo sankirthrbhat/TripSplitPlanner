@@ -133,7 +133,7 @@ npm run test:e2e
 
 1. Push the repository (including `package-lock.json` and `render.yaml`) to GitHub.
 2. Create a new **Web Service** on Render connected to the repository:
-   - **Build Command:** `npm ci && npm run build`
+   - **Build Command:** `npm ci --include=dev && npm run build`
    - **Start Command:** `npm start`
    - **Health Check Path:** `/api/health`
 3. Configure Environment Variables in the Render Dashboard:

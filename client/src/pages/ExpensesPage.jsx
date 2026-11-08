@@ -496,7 +496,7 @@ export function ExpensesPage() {
           </Card>
 
           {/* Settlements + Category Chart */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="min-w-0 lg:col-span-5 space-y-6">
             <Card className="p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-navy-900">

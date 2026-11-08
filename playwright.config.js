@@ -22,7 +22,7 @@ export default defineConfig({
   webServer: {
     command: 'node server/src/scripts/startE2EServer.js',
     url: 'http://localhost:5000/api/health',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 90000,
   },
 });
