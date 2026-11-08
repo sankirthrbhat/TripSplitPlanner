@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+package-lock.json.bak
+
+# Environment files
+.env
+.env.*
+!.env.example
+server/.env
+server/.env.*
+!server/.env.example
+client/.env
+client/.env.*
+
+# Build & Runtime outputs
+client/dist/
+dist/
+build/
+coverage/
+.data/
+*.log
+npm-debug.log*
+
+# Playwright & Test outputs
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
