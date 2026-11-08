@@ -312,13 +312,31 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
   });
 
   test('10. Expense ledger supports equal splits, custom splits, and split-sum validation', async () => {
+    // Hold the first ledger request to reproduce real-network latency while
+    // the owner's cached trip still predates the invitation acceptance.
+    let releaseLedger;
+    const ledgerGate = new Promise((resolve) => { releaseLedger = resolve; });
+    const ledgerUrl = `**/api/trips/${tripId}/expenses*`;
+    const holdLedger = async (route) => {
+      if (route.request().method() === 'GET') await ledgerGate;
+      await route.continue();
+    };
+    await ownerPage.route(ledgerUrl, holdLedger);
     // 1) Paid equal split by Aarav: ₹2,000.00 (₹1,000.00 each)
     await ownerPage.getByRole('link', { name: 'Expenses', exact: true }).click();
+    await expect(ownerPage.getByRole('button', { name: /add expense/i })).toBeDisabled();
+    releaseLedger();
+    await expect(ownerPage.getByRole('button', { name: /add expense/i })).toBeEnabled();
+    await ownerPage.unroute(ledgerUrl, holdLedger);
     await ownerPage.getByRole('button', { name: /add expense/i }).click();
     const ownerExpenseDialog = ownerPage.getByRole('dialog');
     await ownerExpenseDialog.getByLabel(/^title/i).fill('Cottage Booking Advance');
     await ownerExpenseDialog.getByLabel(/amount \(₹ inr\)/i).fill('2000.00');
     await ownerExpenseDialog.getByLabel(/expense status/i).selectOption('paid');
+    await ownerExpenseDialog.getByLabel(/paid by/i).selectOption({ label: 'Aarav E2E' });
+    await expect(ownerExpenseDialog.getByLabel('Aarav E2E', { exact: true })).toBeChecked();
+    await expect(ownerExpenseDialog.getByLabel('Diya E2E', { exact: true })).toBeChecked();
+    await expect(ownerExpenseDialog.getByText('₹1,000.00', { exact: true })).toHaveCount(2);
     await ownerExpenseDialog.getByRole('button', { name: /save expense/i }).click();
 
     await expect(
@@ -386,6 +404,7 @@ test.describe.serial('TripSplit Planner End-to-End Browser Flows', () => {
     await ownerPage.getByRole('button', { name: /what-if simulator/i }).click();
     const simDialog = ownerPage.getByRole('dialog');
     await simDialog.getByLabel(/simulated amount/i).fill('2000.00');
+    await expect(simDialog.getByRole('button', { name: 'Diya E2E', exact: true })).toBeVisible();
     await simDialog
       .getByRole('button', { name: /run simulation preview/i })
       .click();
