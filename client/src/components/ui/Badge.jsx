@@ -1,16 +1,18 @@
 export function Badge({ children, variant = 'neutral', className = '' }) {
   const variants = {
-    neutral: 'bg-slate-100 text-slate-700 border-slate-200',
-    teal: 'bg-teal-50 text-teal-800 border-teal-200',
-    emerald: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    amber: 'bg-amber-50 text-amber-800 border-amber-200',
-    rose: 'bg-rose-50 text-rose-800 border-rose-200',
+    neutral: 'bg-[#F1EFE9] text-ink-body border-canvas-border',
+    teal: 'bg-[#E9F5F3] text-[#0C5E57] border-[#BEE3DD]',
+    emerald: 'bg-emerald-50 text-emerald-900 border-emerald-200',
+    amber: 'bg-amber-50 text-amber-950 border-amber-300',
+    rose: 'bg-rose-50 text-rose-900 border-rose-200',
+    coral: 'bg-coral-soft text-coral-ink border-coral-border',
+    sunshine: 'bg-sunshine-soft text-sunshine-ink border-sunshine-border',
     navy: 'bg-navy-900 text-white border-navy-800',
   };
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ${variants[variant] || variants.neutral} ${className}`}
+      className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium ${variants[variant] || variants.neutral} ${className}`}
     >
       {children}
     </span>

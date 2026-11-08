@@ -5,17 +5,59 @@
 @layer base {
   html {
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #F7F6F2;
+    color: #142C3A;
   }
 
-  /* Crisp financial figures */
+  body {
+    background-color: #F7F6F2;
+    color: #142C3A;
+  }
+
+  /* Crisp aligned financial & date figures */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
 }
 
-/* Accessible focus outlines */
+/* Accessible high-contrast focus outlines */
 :focus-visible {
-  outline: 2px solid #0d9488;
+  outline: 2px solid #0F766E;
   outline-offset: 2px;
+}
+
+/* Smooth travel-notebook transitions (150ms) */
+.ui-transition {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Subtle celebration animation when completing tasks */
+@keyframes task-complete-pop {
+  0% {
+    transform: scale(0.85);
+  }
+  55% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-task-pop {
+  animation: task-complete-pop 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 

@@ -29,25 +29,25 @@ import { formatDate, formatINR, formatTime } from '../utils/format';
 function PulseIndicatorRow({ label, detail, percent, score, maxScore, state }) {
   const barColors = {
     healthy: 'bg-emerald-600',
-    attention: 'bg-teal-600',
-    warning: 'bg-amber-500',
+    attention: 'bg-[#0F766E]',
+    warning: 'bg-amber-600',
     neutral: 'bg-slate-400',
   };
 
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-xs">
-        <div>
-          <span className="font-semibold text-navy-900">{label}</span>
-          <span className="ml-2 text-slate-600">{detail}</span>
+      <div className="flex items-baseline justify-between gap-2 text-xs">
+        <div className="min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="font-semibold text-ink">{label}</span>
+          <span className="text-ink-body">{detail}</span>
         </div>
-        <span className="font-mono text-xs font-semibold text-slate-700 tabular-nums">
+        <span className="shrink-0 whitespace-nowrap font-mono text-xs font-semibold text-ink tabular-nums">
           {score}/{maxScore} pts
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-canvas-subtle">
         <div
-          className={`h-full rounded-full transition-all ${barColors[state] || barColors.neutral}`}
+          className={`h-full rounded-full transition-all duration-150 ${barColors[state] || barColors.neutral}`}
           style={{ width: `${Math.max(0, Math.min(100, percent))}%` }}
         />
       </div>
@@ -111,16 +111,16 @@ export function TripOverviewPage() {
 
   return (
     <div className="space-y-6">
-      {/* Conflict Alert Banner */}
+      {/* Prominent Actionable Schedule Conflict Alert */}
       {conflictReport.conflictCount > 0 ? (
         <div
           role="alert"
-          className="flex flex-col gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-3 rounded-2xl border border-amber-300 border-l-4 border-l-amber-600 bg-amber-50 p-4 shadow-card sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-amber-950">
+              <p className="text-sm font-bold text-amber-950">
                 {conflictReport.conflictCount} Schedule Overlap
                 {conflictReport.conflictCount > 1 ? 's' : ''} Detected
               </p>
@@ -131,7 +131,7 @@ export function TripOverviewPage() {
           </div>
           <Link
             to={`/trips/${tripId}/itinerary`}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-amber-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-amber-700"
+            className="inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-amber-700 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-amber-800"
           >
             Review Itinerary Conflicts
             <ArrowRight className="h-3.5 w-3.5" />
@@ -139,17 +139,19 @@ export function TripOverviewPage() {
         </div>
       ) : null}
 
-      {/* Top KPI Row */}
+      {/* Top KPI Comparison Row */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-4">
-          <div className="flex items-center justify-between text-xs font-medium text-slate-500">
+        <Card className="p-4 sm:p-5">
+          <div className="flex items-center justify-between text-xs font-semibold text-ink-body">
             <span>Estimated Trip Total</span>
-            <IndianRupee className="h-4 w-4 text-teal-600" />
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#E9F5F3] text-[#0F766E]">
+              <IndianRupee className="h-4 w-4" />
+            </span>
           </div>
-          <p className="mt-2 text-2xl font-bold text-navy-900 tabular-nums">
+          <p className="mt-2 text-2xl font-extrabold text-ink tabular-nums">
             {formatINR(financialSummary.tripTotalEstimatedMinor)}
           </p>
-          <p className="mt-1 text-xs text-slate-600 tabular-nums">
+          <p className="mt-1 text-xs text-ink-body tabular-nums">
             {financialSummary.hasBudget
               ? financialSummary.isOverBudget
                 ? `Over budget by ${formatINR(Math.abs(financialSummary.budgetDifferenceMinor))}`
@@ -160,45 +162,51 @@ export function TripOverviewPage() {
           </p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center justify-between text-xs font-medium text-slate-500">
+        <Card className="p-4 sm:p-5">
+          <div className="flex items-center justify-between text-xs font-semibold text-ink-body">
             <span>Paid vs Remaining Planned</span>
-            <Wallet className="h-4 w-4 text-emerald-600" />
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+              <Wallet className="h-4 w-4" />
+            </span>
           </div>
-          <p className="mt-2 text-2xl font-bold text-emerald-700 tabular-nums">
+          <p className="mt-2 text-2xl font-extrabold text-emerald-700 tabular-nums">
             {formatINR(financialSummary.tripTotalPaidMinor)}
           </p>
-          <p className="mt-1 text-xs text-slate-600 tabular-nums">
+          <p className="mt-1 text-xs text-ink-body tabular-nums">
             +{formatINR(financialSummary.remainingEstimatedMinor)} planned remaining
           </p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center justify-between text-xs font-medium text-slate-500">
+        <Card className="p-4 sm:p-5">
+          <div className="flex items-center justify-between text-xs font-semibold text-ink-body">
             <span>Schedule Health</span>
-            <CalendarClock className="h-4 w-4 text-amber-600" />
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+              <CalendarClock className="h-4 w-4" />
+            </span>
           </div>
-          <p className="mt-2 text-2xl font-bold text-navy-900 tabular-nums">
+          <p className="mt-2 text-2xl font-extrabold text-ink tabular-nums">
             {conflictReport.conflictCount === 0
               ? 'No Conflicts'
               : `${conflictReport.conflictCount} Conflict${
                   conflictReport.conflictCount > 1 ? 's' : ''
                 }`}
           </p>
-          <p className="mt-1 text-xs text-slate-600">
+          <p className="mt-1 text-xs text-ink-body">
             {indicators.schedule.activeActivities} active itinerary items
           </p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center justify-between text-xs font-medium text-slate-500">
-            <span>Bookings & Tasks</span>
-            <Hotel className="h-4 w-4 text-navy-700" />
+        <Card className="p-4 sm:p-5">
+          <div className="flex items-center justify-between text-xs font-semibold text-ink-body">
+            <span>Bookings &amp; Tasks</span>
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-sunshine-soft text-sunshine-ink">
+              <Hotel className="h-4 w-4" />
+            </span>
           </div>
-          <p className="mt-2 text-2xl font-bold text-navy-900 tabular-nums">
+          <p className="mt-2 text-2xl font-extrabold text-ink tabular-nums">
             {bookingStats.confirmed}/{indicators.bookings.totalActive} Confirmed
           </p>
-          <p className="mt-1 text-xs text-slate-600">
+          <p className="mt-1 text-xs text-ink-body tabular-nums">
             {indicators.tasks.completed}/{indicators.tasks.total} tasks completed
           </p>
         </Card>
@@ -207,28 +215,33 @@ export function TripOverviewPage() {
       {/* Trip Pulse + Per-Person Cost Chart */}
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Trip Pulse Readiness Widget */}
-        <Card className="p-5 sm:p-6 lg:col-span-5 flex flex-col justify-between">
+        <Card className="p-5 sm:p-6 lg:col-span-5 flex flex-col justify-between space-y-5">
           <div className="space-y-5">
-            <div className="flex items-start justify-between gap-2">
-              <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <ActivityIcon className="h-4 w-4 text-teal-600" />
-                  <h2 className="text-base font-bold text-navy-900">
+                  <ActivityIcon className="h-4 w-4 text-[#0F766E] shrink-0" />
+                  <h2 className="text-base font-bold text-ink">
                     Trip Pulse Readiness
                   </h2>
                 </div>
-                <p className="mt-0.5 text-xs text-slate-500">
+                <p className="mt-0.5 text-xs text-ink-body">
                   Transparent rule-based readiness score (25 pts per pillar)
                 </p>
               </div>
               <Badge variant={pulseBadge.variant}>{pulseBadge.label}</Badge>
             </div>
 
-            <div className="flex items-baseline gap-2 rounded-xl bg-navy-900 px-4 py-3 text-white">
-              <span className="text-3xl font-bold tabular-nums">
-                {pulse.overallScore}
+            <div className="flex items-baseline justify-between gap-2 rounded-2xl border border-[#BEE3DD] bg-[#F3FAF8] px-4 py-3.5">
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-extrabold text-[#0F766E] tabular-nums">
+                  {pulse.overallScore}
+                </span>
+                <span className="text-sm font-medium text-ink-body">/ 100 readiness index</span>
+              </div>
+              <span className="text-[11px] font-semibold text-[#0C5E57]">
+                4 equal rules
               </span>
-              <span className="text-sm text-slate-300">/ 100 readiness index</span>
             </div>
 
             <div className="space-y-4">
@@ -270,24 +283,28 @@ export function TripOverviewPage() {
               />
             </div>
           </div>
+
+          <p className="rounded-xl border border-canvas-border bg-[#FAF9F5] px-3 py-2 text-[11px] leading-relaxed text-ink-body">
+            Rule breakdown: each pillar awards up to 25 points directly from your completed tasks, confirmed bookings, zero overlapping itinerary items, and budget headroom.
+          </p>
         </Card>
 
         {/* Per-Person Estimated Cost Breakdown + Chart */}
         <Card className="p-5 sm:p-6 lg:col-span-7 space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h2 className="text-base font-bold text-navy-900">
+              <h2 className="text-base font-bold text-ink">
                 Estimated Per-Person Cost Breakdown
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-ink-body">
                 Each member&apos;s exact share across paid and planned expenses
               </p>
             </div>
             <Link
               to={`/trips/${tripId}/expenses`}
-              className="text-xs font-semibold text-teal-700 hover:underline inline-flex items-center gap-1"
+              className="text-xs font-semibold text-[#0F766E] hover:underline inline-flex items-center gap-1"
             >
-              Full Ledger & Splits
+              Full Ledger &amp; Splits
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -297,31 +314,33 @@ export function TripOverviewPage() {
             <div className="h-52 w-full" aria-label="Per-person cost breakdown chart">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#334155' }} />
-                  <YAxis tick={{ fontSize: 11, fill: '#475569' }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E9E7" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#142C3A' }} />
+                  <YAxis tick={{ fontSize: 11, fill: '#485C66' }} />
                   <Tooltip
                     formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`}
                   />
                   <Bar
+                    isAnimationActive={false}
                     dataKey="PaidShare"
                     name="Paid Share"
                     stackId="cost"
-                    fill="#0f766e"
+                    fill="#0F766E"
                     radius={[0, 0, 0, 0]}
                   />
                   <Bar
+                    isAnimationActive={false}
                     dataKey="PlannedShare"
                     name="Planned Share"
                     stackId="cost"
-                    fill="#94a3b8"
-                    radius={[4, 4, 0, 0]}
+                    fill="#F4C95D"
+                    radius={[6, 6, 0, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-xs text-slate-500">
+            <div className="rounded-xl border border-dashed border-canvas-border bg-[#FAF9F5] p-6 text-center text-xs text-ink-body">
               Add planned or paid expenses to visualize per-person cost shares.
             </div>
           )}
@@ -330,26 +349,26 @@ export function TripOverviewPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500">
+                <tr className="border-b border-canvas-border text-ink-body">
                   <th className="py-2 pr-3 font-semibold">Member</th>
                   <th className="py-2 px-3 font-semibold text-right">Paid Share</th>
                   <th className="py-2 px-3 font-semibold text-right">Planned Share</th>
                   <th className="py-2 pl-3 font-semibold text-right">Estimated Total</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-canvas-border/70">
                 {financialSummary.participantSummaries.map((p) => (
                   <tr key={p.userId}>
-                    <td className="py-2 pr-3 font-medium text-navy-900">
+                    <td className="py-2.5 pr-3 font-semibold text-ink">
                       {p.displayName}
                     </td>
-                    <td className="py-2 px-3 text-right tabular-nums text-emerald-700">
+                    <td className="py-2.5 px-3 text-right tabular-nums text-emerald-700 font-medium">
                       {formatINR(p.paidShareMinor)}
                     </td>
-                    <td className="py-2 px-3 text-right tabular-nums text-slate-600">
+                    <td className="py-2.5 px-3 text-right tabular-nums text-ink-body">
                       {formatINR(p.plannedShareMinor)}
                     </td>
-                    <td className="py-2 pl-3 text-right font-bold tabular-nums text-navy-900">
+                    <td className="py-2.5 pl-3 text-right font-bold tabular-nums text-ink">
                       {formatINR(p.estimatedTotalMinor)}
                     </td>
                   </tr>
@@ -365,10 +384,10 @@ export function TripOverviewPage() {
         {/* Upcoming Activities */}
         <Card className="p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-navy-900">Itinerary Preview</h2>
+            <h2 className="text-sm font-bold text-ink">Itinerary Preview</h2>
             <Link
               to={`/trips/${tripId}/itinerary`}
-              className="text-xs font-semibold text-teal-700 hover:underline"
+              className="text-xs font-semibold text-[#0F766E] hover:underline"
             >
               View All
             </Link>
@@ -379,19 +398,19 @@ export function TripOverviewPage() {
               description="Add your first trip activity to build the timeline."
             />
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {upcomingActivities.map((act) => (
                 <li
                   key={act.id}
-                  className="rounded-lg border border-slate-200 bg-slate-50/60 p-3 text-xs"
+                  className="rounded-xl border border-canvas-border bg-[#FAF9F5] p-3 text-xs"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-navy-900 truncate">
+                    <span className="font-bold text-ink truncate">
                       {act.title}
                     </span>
                     <StatusBadge status={act.status} />
                   </div>
-                  <p className="mt-1 text-slate-600">
+                  <p className="mt-1 text-ink-body tabular-nums">
                     {formatDate(act.startAt, trip.timezone)} •{' '}
                     {formatTime(act.startAt, trip.timezone)} –{' '}
                     {formatTime(act.endAt, trip.timezone)}
@@ -405,17 +424,17 @@ export function TripOverviewPage() {
         {/* Outstanding Tasks */}
         <Card className="p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-navy-900">Outstanding Tasks</h2>
+            <h2 className="text-sm font-bold text-ink">Outstanding Tasks</h2>
             <Link
               to={`/trips/${tripId}/tasks`}
-              className="text-xs font-semibold text-teal-700 hover:underline"
+              className="text-xs font-semibold text-[#0F766E] hover:underline"
             >
               Manage Tasks
             </Link>
           </div>
           {outstandingTasks.length === 0 ? (
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-center text-xs text-emerald-900">
-              <CheckCircle2 className="mx-auto mb-1.5 h-5 w-5 text-emerald-600" />
+              <CheckCircle2 className="mx-auto mb-1.5 h-5 w-5 text-emerald-700" />
               All assigned tasks are completed!
             </div>
           ) : (
@@ -423,11 +442,11 @@ export function TripOverviewPage() {
               {outstandingTasks.map((task) => (
                 <li
                   key={task.id}
-                  className="flex items-start justify-between gap-2 rounded-lg border border-slate-200 p-3 text-xs"
+                  className="flex items-start justify-between gap-2 rounded-xl border border-canvas-border bg-[#FAF9F5] p-3 text-xs"
                 >
                   <div className="min-w-0">
-                    <p className="font-semibold text-navy-900 truncate">{task.title}</p>
-                    <p className="mt-0.5 text-slate-500">
+                    <p className="font-bold text-ink truncate">{task.title}</p>
+                    <p className="mt-0.5 text-ink-body">
                       Assigned to {task.assignedTo?.displayName || 'Member'}
                     </p>
                   </div>
@@ -441,22 +460,22 @@ export function TripOverviewPage() {
         {/* Paid-Only Settlement Preview */}
         <Card className="p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-navy-900">
+            <h2 className="text-sm font-bold text-ink">
               Paid Settlement Plan
             </h2>
             <Link
               to={`/trips/${tripId}/expenses`}
-              className="text-xs font-semibold text-teal-700 hover:underline"
+              className="text-xs font-semibold text-[#0F766E] hover:underline"
             >
               Details
             </Link>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-ink-body">
             Calculated strictly from paid expenses. Planned estimates are excluded.
           </p>
           {financialSummary.settlements.transfers.length === 0 ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 text-center text-xs text-slate-600">
-              <CheckSquare className="mx-auto mb-1.5 h-5 w-5 text-teal-600" />
+            <div className="rounded-xl border border-canvas-border bg-[#FAF9F5] p-5 text-center text-xs text-ink-body">
+              <CheckSquare className="mx-auto mb-1.5 h-5 w-5 text-[#0F766E]" />
               All paid balances are currently settled (₹0.00 owed).
             </div>
           ) : (
@@ -464,18 +483,18 @@ export function TripOverviewPage() {
               {financialSummary.settlements.transfers.map((tx, idx) => (
                 <li
                   key={`${tx.fromUserId}-${tx.toUserId}-${idx}`}
-                  className="flex items-center justify-between rounded-lg border border-teal-200 bg-teal-50/50 p-3 text-xs"
+                  className="flex items-center justify-between gap-2 rounded-xl border border-[#BEE3DD] bg-[#F3FAF8] p-3 text-xs"
                 >
-                  <div>
-                    <span className="font-semibold text-navy-900">
+                  <div className="min-w-0">
+                    <span className="font-bold text-ink">
                       {tx.fromDisplayName}
                     </span>{' '}
-                    <span className="text-slate-600">pays</span>{' '}
-                    <span className="font-semibold text-navy-900">
+                    <span className="text-ink-body">pays</span>{' '}
+                    <span className="font-bold text-ink">
                       {tx.toDisplayName}
                     </span>
                   </div>
-                  <span className="font-bold text-teal-800 tabular-nums">
+                  <span className="shrink-0 font-extrabold text-[#0C5E57] tabular-nums">
                     {formatINR(tx.amountMinor)}
                   </span>
                 </li>
@@ -487,4 +506,3 @@ export function TripOverviewPage() {
     </div>
   );
 }
-

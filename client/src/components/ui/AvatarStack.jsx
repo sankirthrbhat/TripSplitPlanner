@@ -1,11 +1,11 @@
 import { getInitials } from '../../utils/format';
 
 const PALETTE = [
-  'bg-teal-700 text-white',
-  'bg-navy-800 text-white',
-  'bg-amber-700 text-white',
-  'bg-emerald-700 text-white',
-  'bg-slate-700 text-white',
+  'bg-[#0F766E] text-white',
+  'bg-navy-900 text-white',
+  'bg-[#B45309] text-white',
+  'bg-[#9A3412] text-white',
+  'bg-[#334E68] text-white',
 ];
 
 export function AvatarStack({ members = [], max = 5 }) {
@@ -18,13 +18,13 @@ export function AvatarStack({ members = [], max = 5 }) {
         <div
           key={m.userId || idx}
           title={`${m.displayName} (${m.role})`}
-          className={`inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-white text-xs font-semibold ${PALETTE[idx % PALETTE.length]}`}
+          className={`inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-white text-xs font-bold shadow-sm ${PALETTE[idx % PALETTE.length]}`}
         >
           {getInitials(m.displayName)}
         </div>
       ))}
       {extra > 0 ? (
-        <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-slate-200 text-xs font-semibold text-slate-700">
+        <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-canvas-subtle text-xs font-bold text-ink">
           +{extra}
         </div>
       ) : null}

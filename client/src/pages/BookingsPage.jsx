@@ -272,10 +272,10 @@ export function BookingsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold text-navy-900">
-            Reservations & Bookings Organizer
+          <h2 className="text-xl font-bold text-ink">
+            Reservations &amp; Bookings Organizer
           </h2>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-ink-body">
             Track accommodation, transport, and activity reservations with reference numbers and single-ledger linked costs.
           </p>
         </div>
@@ -287,15 +287,15 @@ export function BookingsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-canvas-border bg-white p-3">
-        <span className="text-xs font-semibold text-slate-500 mr-1">Category:</span>
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-canvas-border bg-white p-3.5 shadow-card">
+        <span className="text-xs font-semibold text-ink-muted mr-1">Category:</span>
         <button
           type="button"
           onClick={() => setCategoryFilter('')}
-          className={`rounded-lg px-3 py-1.5 text-xs font-medium ${
+          className={`min-h-[36px] rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors duration-150 ${
             categoryFilter === ''
-              ? 'bg-navy-900 text-white'
-              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              ? 'bg-[#0F766E] text-white shadow-sm'
+              : 'bg-canvas-subtle text-ink-body hover:bg-[#E7ECEA] hover:text-ink'
           }`}
         >
           All
@@ -305,10 +305,10 @@ export function BookingsPage() {
             key={cat}
             type="button"
             onClick={() => setCategoryFilter(cat)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize ${
+            className={`min-h-[36px] rounded-xl px-3 py-1.5 text-xs font-semibold capitalize transition-colors duration-150 ${
               categoryFilter === cat
-                ? 'bg-navy-900 text-white'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-[#0F766E] text-white shadow-sm'
+                : 'bg-canvas-subtle text-ink-body hover:bg-[#E7ECEA] hover:text-ink'
             }`}
           >
             {cat}
@@ -320,7 +320,7 @@ export function BookingsPage() {
             aria-label="Filter booking status"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            className="min-h-[36px] rounded-xl border border-[#D4DDD9] bg-white px-3 py-1.5 text-xs font-medium text-ink focus:border-[#0F766E] focus:outline-none"
           >
             <option value="">All statuses</option>
             <option value="tentative">Tentative</option>
@@ -351,8 +351,8 @@ export function BookingsPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {bookings.map((booking) => (
-            <Card key={booking.id} className="p-5 flex flex-col justify-between gap-4">
-              <div className="space-y-2.5">
+            <Card key={booking.id} className="p-5 flex flex-col justify-between gap-4 hover:border-[#0F766E]/45">
+              <div className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <StatusBadge status={booking.status} />
@@ -361,23 +361,23 @@ export function BookingsPage() {
                     </Badge>
                   </div>
                   {booking.referenceNumber ? (
-                    <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-700">
+                    <span className="rounded-lg border border-canvas-border bg-[#FAF9F5] px-2.5 py-0.5 font-mono text-[11px] font-bold text-ink">
                       Ref: {booking.referenceNumber}
                     </span>
                   ) : null}
                 </div>
 
                 <div>
-                  <h3 className="text-base font-bold text-navy-900">
+                  <h3 className="text-base font-bold text-ink">
                     {booking.title}
                   </h3>
-                  <p className="text-xs font-medium text-teal-700">
+                  <p className="text-xs font-semibold text-[#0F766E] mt-0.5">
                     {booking.provider}
                   </p>
                 </div>
 
                 {booking.startAt || booking.endAt ? (
-                  <p className="text-xs text-slate-600">
+                  <p className="rounded-lg border border-canvas-border bg-[#FAF9F5] px-3 py-1.5 text-xs text-ink-body tabular-nums">
                     {booking.startAt
                       ? formatDateTime(booking.startAt, trip.timezone)
                       : '—'}{' '}
@@ -389,12 +389,12 @@ export function BookingsPage() {
                 ) : null}
 
                 {booking.notes ? (
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  <p className="text-xs text-ink-body leading-relaxed">
                     {booking.notes}
                   </p>
                 ) : null}
 
-                <div className="flex flex-wrap items-center gap-2 pt-1">
+                <div className="flex flex-wrap items-center gap-2 pt-0.5">
                   {booking.linkedExpenseId ? (
                     <Badge variant="teal">
                       <ReceiptIndianRupee className="h-3 w-3" />
@@ -407,7 +407,7 @@ export function BookingsPage() {
                       href={booking.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-teal-700 hover:underline"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#0F766E] hover:underline"
                     >
                       Booking Link
                       <ExternalLink className="h-3 w-3" />
@@ -416,7 +416,7 @@ export function BookingsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+              <div className="flex items-center justify-end gap-2 border-t border-canvas-border pt-3">
                 <Button
                   size="sm"
                   variant="secondary"
@@ -430,7 +430,7 @@ export function BookingsPage() {
                   variant="ghost"
                   aria-label={`Delete ${booking.title}`}
                   onClick={() => setDeleteTarget(booking)}
-                  className="text-rose-600 hover:bg-rose-50"
+                  className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

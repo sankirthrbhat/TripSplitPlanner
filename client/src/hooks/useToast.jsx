@@ -39,15 +39,15 @@ export function ToastProvider({ children }) {
   const styles = {
     success: 'border-emerald-200 bg-emerald-50 text-emerald-950',
     error: 'border-rose-200 bg-rose-50 text-rose-950',
-    warning: 'border-amber-200 bg-amber-50 text-amber-950',
-    info: 'border-slate-200 bg-white text-slate-900',
+    warning: 'border-amber-300 bg-amber-50 text-amber-950',
+    info: 'border-canvas-border bg-white text-ink',
   };
 
   const icons = {
-    success: <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />,
-    error: <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />,
-    warning: <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />,
-    info: <Info className="h-5 w-5 text-teal-600 shrink-0" />,
+    success: <CheckCircle2 className="h-5 w-5 text-emerald-700 shrink-0" />,
+    error: <AlertCircle className="h-5 w-5 text-rose-700 shrink-0" />,
+    warning: <AlertCircle className="h-5 w-5 text-amber-700 shrink-0" />,
+    info: <Info className="h-5 w-5 text-[#0F766E] shrink-0" />,
   };
 
   return (
@@ -62,11 +62,11 @@ export function ToastProvider({ children }) {
           <div
             key={t.id}
             role="status"
-            className={`pointer-events-auto flex items-start gap-3 rounded-xl border p-3.5 shadow-lg transition-all ${styles[t.variant] || styles.info}`}
+            className={`pointer-events-auto flex items-start gap-3 rounded-2xl border p-3.5 shadow-lg transition-all duration-150 ${styles[t.variant] || styles.info}`}
           >
             {icons[t.variant] || icons.info}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold leading-tight">{t.title}</p>
+              <p className="text-sm font-bold leading-tight">{t.title}</p>
               {t.description ? (
                 <p className="mt-1 text-xs opacity-90 leading-relaxed">
                   {t.description}
@@ -77,7 +77,7 @@ export function ToastProvider({ children }) {
               type="button"
               onClick={() => dismissToast(t.id)}
               aria-label="Dismiss notification"
-              className="rounded-md p-1 opacity-60 hover:opacity-100 focus-visible:outline-2"
+              className="rounded-lg p-1 opacity-70 hover:opacity-100 focus-visible:outline-2"
             >
               <X className="h-4 w-4" />
             </button>

@@ -100,44 +100,55 @@ export function MembersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-navy-900">
-          Trip Members & Invitations
+        <h2 className="text-xl font-bold text-ink">
+          Trip Members &amp; Invitations
         </h2>
-        <p className="text-xs text-slate-600">
-          View collaborators and generate 7-day cryptographically hashed invitation links.
+        <p className="text-xs text-ink-body">
+          Manage collaborators and generate 7-day invitation links. Only the trip owner can create invites or remove members.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Member Roster */}
         <Card className="p-5 sm:p-6 lg:col-span-7 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-navy-900 flex items-center gap-2">
-              <Users className="h-4 w-4 text-teal-600" />
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-base font-bold text-ink flex items-center gap-2">
+              <Users className="h-4 w-4 text-[#0F766E]" />
               Active Collaborators ({trip.members.length})
             </h3>
+            <span className="text-xs text-ink-muted">
+              Owner &amp; collaborator roles
+            </span>
           </div>
 
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-canvas-border/80">
             {trip.members.map((m) => (
               <li
                 key={m.userId}
-                className="flex items-center justify-between gap-3 py-3"
+                className="flex items-center justify-between gap-3 py-3.5"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy-800 text-xs font-bold text-white">
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm ${m.role === 'owner' ? 'bg-navy-900' : 'bg-[#0F766E]'
+                      }`}
+                  >
                     {getInitials(m.displayName)}
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-navy-900 truncate">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm font-bold text-ink truncate">
                         {m.displayName}
                       </p>
                       <Badge variant={m.role === 'owner' ? 'navy' : 'teal'}>
                         {m.role === 'owner' ? 'Owner' : 'Member'}
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-500 truncate">{m.email}</p>
+                    <p className="text-xs text-ink-muted truncate">{m.email}</p>
+                    <p className="text-[11px] text-ink-body mt-0.5">
+                      {m.role === 'owner'
+                        ? 'Full workspace settings, member invites & editing'
+                        : 'Can collaborate on itinerary, bookings, tasks & expenses'}
+                    </p>
                   </div>
                 </div>
 
@@ -146,7 +157,7 @@ export function MembersPage() {
                     size="sm"
                     variant="ghost"
                     onClick={() => setRemoveTarget(m)}
-                    className="text-rose-600 hover:bg-rose-50"
+                    className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                   >
                     <UserMinus className="h-4 w-4" />
                     Remove
@@ -160,13 +171,12 @@ export function MembersPage() {
         {/* Invite Generator Panel */}
         <Card className="p-5 sm:p-6 lg:col-span-5 space-y-4">
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-navy-900 flex items-center gap-2">
-              <Link2 className="h-4 w-4 text-teal-600" />
+            <h3 className="text-base font-bold text-ink flex items-center gap-2">
+              <Link2 className="h-4 w-4 text-[#0F766E]" />
               Invite Friends to Trip
             </h3>
-            <p className="text-xs text-slate-500">
-              Only SHA-256 token hashes are stored in MongoDB. Links expire automatically
-              after 7 days.
+            <p className="text-xs text-ink-body">
+              Single-use invitation links expire automatically after 7 days.
             </p>
           </div>
 
@@ -212,8 +222,8 @@ export function MembersPage() {
               </Button>
             </form>
           ) : (
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 flex items-start gap-2">
-              <Shield className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
+            <div className="rounded-xl border border-canvas-border bg-[#FAF9F5] p-4 text-xs text-ink-body flex items-start gap-2.5">
+              <Shield className="h-4 w-4 text-[#0F766E] shrink-0 mt-0.5" />
               Only the trip owner can generate or revoke invitation links.
             </div>
           )}
@@ -221,9 +231,9 @@ export function MembersPage() {
           {generatedLink ? (
             <div
               data-testid="generated-invite-box"
-              className="rounded-xl border border-teal-300 bg-teal-50 p-3.5 space-y-2"
+              className="rounded-xl border border-[#BEE3DD] bg-[#E9F5F3] p-3.5 space-y-2"
             >
-              <p className="text-xs font-bold text-teal-950">
+              <p className="text-xs font-bold text-[#0C5E57]">
                 Shareable Invitation Link (Shown Once):
               </p>
               <div className="flex items-center gap-2">
@@ -232,7 +242,7 @@ export function MembersPage() {
                   readOnly
                   aria-label="Generated invitation link"
                   value={generatedLink}
-                  className="w-full rounded-lg border border-teal-300 bg-white px-2.5 py-1.5 font-mono text-xs text-slate-800"
+                  className="w-full rounded-lg border border-[#BEE3DD] bg-white px-2.5 py-1.5 font-mono text-xs text-ink"
                 />
                 <Button size="sm" onClick={handleCopy}>
                   {copied ? (
@@ -250,18 +260,18 @@ export function MembersPage() {
 
       {/* Invitation History */}
       <Card className="p-5 sm:p-6 space-y-4">
-        <h3 className="text-sm font-bold text-navy-900">
+        <h3 className="text-sm font-bold text-ink">
           Invitation Log ({invitations.length})
         </h3>
         {invitations.length === 0 ? (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-ink-muted">
             No invitation tokens have been generated for this trip yet.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500">
+                <tr className="border-b border-canvas-border text-ink-body">
                   <th className="py-2 pr-3 font-semibold">Label / Email Hint</th>
                   <th className="py-2 px-3 font-semibold">Created</th>
                   <th className="py-2 px-3 font-semibold">Expires</th>
@@ -271,16 +281,16 @@ export function MembersPage() {
                   ) : null}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-canvas-border/70">
                 {invitations.map((inv) => (
                   <tr key={inv.id}>
-                    <td className="py-2.5 pr-3 font-medium text-navy-900">
+                    <td className="py-2.5 pr-3 font-semibold text-ink">
                       {inv.label || inv.invitedEmail || 'General Trip Invite'}
                     </td>
-                    <td className="py-2.5 px-3 text-slate-600">
+                    <td className="py-2.5 px-3 text-ink-body tabular-nums">
                       {formatDate(inv.createdAt, trip.timezone)}
                     </td>
-                    <td className="py-2.5 px-3 text-slate-600">
+                    <td className="py-2.5 px-3 text-ink-body tabular-nums">
                       {formatDate(inv.expiresAt, trip.timezone)}
                     </td>
                     <td className="py-2.5 px-3">
@@ -293,13 +303,13 @@ export function MembersPage() {
                             size="sm"
                             variant="ghost"
                             onClick={() => revokeMutation.mutate(inv.id)}
-                            className="text-rose-600 hover:bg-rose-50"
+                            className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                             Revoke
                           </Button>
                         ) : (
-                          <span className="text-slate-400">—</span>
+                          <span className="text-ink-muted">—</span>
                         )}
                       </td>
                     ) : null}

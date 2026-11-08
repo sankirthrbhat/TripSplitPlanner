@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Calendar,
+  CheckCircle2,
   CheckSquare,
   Edit2,
   Plus,
@@ -89,11 +90,15 @@ export function TasksPage() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }) => tasksApi.update(tripId, id, payload),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       invalidateAll();
       setModalOpen(false);
       setEditingTask(null);
-      toast.success('Task updated');
+      if (variables?.payload?.status === 'done') {
+        toast.success('Task completed', `"${data?.task?.title || 'Task'}" marked done!`);
+      } else {
+        toast.success('Task updated');
+      }
     },
     onError: (err) => toast.error('Could not update task', err.message),
   });
@@ -166,10 +171,10 @@ export function TasksPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold text-navy-900">
-            Responsibilities & Tasks
+          <h2 className="text-xl font-bold text-ink">
+            Responsibilities &amp; Tasks
           </h2>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-ink-body">
             Assign packing, permits, and booking follow-ups across trip members.
           </p>
         </div>
@@ -181,17 +186,17 @@ export function TasksPage() {
       </div>
 
       {/* Completion Progress Bar */}
-      <Card className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1 flex-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-navy-900">
+      <Card className="p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-2 flex-1">
+          <div className="flex items-center justify-between text-xs font-bold text-ink">
             <span>Task Completion Progress</span>
-            <span className="tabular-nums">
+            <span className="tabular-nums text-[#0C5E57]">
               {stats.done}/{stats.total} completed ({stats.completionPercent}%)
             </span>
           </div>
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-canvas-subtle">
             <div
-              className="h-full rounded-full bg-teal-600 transition-all"
+              className="h-full rounded-full bg-[#0F766E] transition-all duration-150"
               style={{ width: `${stats.completionPercent}%` }}
             />
           </div>
@@ -199,16 +204,16 @@ export function TasksPage() {
       </Card>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-canvas-border bg-white p-3">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-canvas-border bg-white p-3.5 shadow-card">
         <div className="flex items-center gap-2">
-          <label htmlFor="task-filter-assignee" className="text-xs font-semibold text-slate-500">
+          <label htmlFor="task-filter-assignee" className="text-xs font-semibold text-ink-muted">
             Assignee:
           </label>
           <select
             id="task-filter-assignee"
             value={assigneeFilter}
             onChange={(e) => setAssigneeFilter(e.target.value)}
-            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            className="min-h-[36px] rounded-xl border border-[#D4DDD9] bg-white px-3 py-1.5 text-xs font-medium text-ink focus:border-[#0F766E] focus:outline-none"
           >
             <option value="">All Members</option>
             {trip.members.map((m) => (
@@ -220,14 +225,14 @@ export function TasksPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="task-filter-status" className="text-xs font-semibold text-slate-500">
+          <label htmlFor="task-filter-status" className="text-xs font-semibold text-ink-muted">
             Status:
           </label>
           <select
             id="task-filter-status"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            className="min-h-[36px] rounded-xl border border-[#D4DDD9] bg-white px-3 py-1.5 text-xs font-medium text-ink focus:border-[#0F766E] focus:outline-none"
           >
             <option value="">All Statuses</option>
             <option value="todo">To Do</option>
@@ -257,78 +262,91 @@ export function TasksPage() {
         />
       ) : (
         <div className="space-y-3">
-          {tasks.map((task) => (
-            <Card key={task.id} className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-1.5 flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <StatusBadge status={task.status} />
-                  <Badge variant={priorityVariants[task.priority] || 'neutral'} className="capitalize">
-                    {task.priority} priority
-                  </Badge>
-                </div>
+          {tasks.map((task) => {
+            const isDone = task.status === 'done';
+            return (
+              <Card
+                key={task.id}
+                className={`p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between transition-all duration-150 ${
+                  isDone ? 'border-emerald-200 bg-emerald-50/25' : 'hover:border-[#0F766E]/45'
+                }`}
+              >
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {isDone ? (
+                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 animate-task-pop">
+                        <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      </span>
+                    ) : null}
+                    <StatusBadge status={task.status} />
+                    <Badge variant={priorityVariants[task.priority] || 'neutral'} className="capitalize">
+                      {task.priority} priority
+                    </Badge>
+                  </div>
 
-                <h3
-                  className={`text-sm font-bold text-navy-900 ${
-                    task.status === 'done' ? 'line-through text-slate-500' : ''
-                  }`}
-                >
-                  {task.title}
-                </h3>
+                  <h3
+                    className={`text-sm font-bold transition-colors duration-150 ${
+                      isDone ? 'line-through text-ink-muted' : 'text-ink'
+                    }`}
+                  >
+                    {task.title}
+                  </h3>
 
-                {task.description ? (
-                  <p className="text-xs text-slate-600">{task.description}</p>
-                ) : null}
-
-                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-1">
-                  <span className="inline-flex items-center gap-1">
-                    <User className="h-3.5 w-3.5 text-teal-600" />
-                    {task.assignedTo?.displayName || 'Member'}
-                  </span>
-                  {task.dueDate ? (
-                    <span className="inline-flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                      Due {formatDate(task.dueDate, trip.timezone)}
-                    </span>
+                  {task.description ? (
+                    <p className="text-xs text-ink-body">{task.description}</p>
                   ) : null}
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <select
-                  aria-label={`Change status for ${task.title}`}
-                  value={task.status}
-                  onChange={(e) =>
-                    updateMutation.mutate({
-                      id: task.id,
-                      payload: { status: e.target.value },
-                    })
-                  }
-                  className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800"
-                >
-                  <option value="todo">To Do</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="done">Done</option>
-                </select>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => openEditModal(task)}
-                >
-                  <Edit2 className="h-3.5 w-3.5" />
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  aria-label={`Delete ${task.title}`}
-                  onClick={() => setDeleteTarget(task)}
-                  className="text-rose-600 hover:bg-rose-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </Card>
-          ))}
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-ink-muted pt-1">
+                    <span className="inline-flex items-center gap-1.5 font-medium text-ink-body">
+                      <User className="h-3.5 w-3.5 text-[#0F766E]" />
+                      {task.assignedTo?.displayName || 'Member'}
+                    </span>
+                    {task.dueDate ? (
+                      <span className="inline-flex items-center gap-1.5 tabular-nums">
+                        <Calendar className="h-3.5 w-3.5 text-ink-muted" />
+                        Due {formatDate(task.dueDate, trip.timezone)}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <select
+                    aria-label={`Change status for ${task.title}`}
+                    value={task.status}
+                    onChange={(e) =>
+                      updateMutation.mutate({
+                        id: task.id,
+                        payload: { status: e.target.value },
+                      })
+                    }
+                    className="min-h-[38px] rounded-xl border border-[#D4DDD9] bg-white px-3 py-1.5 text-xs font-semibold text-ink focus:border-[#0F766E] focus:outline-none"
+                  >
+                    <option value="todo">To Do</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="done">Done</option>
+                  </select>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => openEditModal(task)}
+                  >
+                    <Edit2 className="h-3.5 w-3.5" />
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    aria-label={`Delete ${task.title}`}
+                    onClick={() => setDeleteTarget(task)}
+                    className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       )}
 

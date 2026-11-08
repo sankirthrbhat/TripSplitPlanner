@@ -112,15 +112,15 @@ export function TripSettingsPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-navy-900">Trip Workspace Settings</h2>
-        <p className="text-xs text-slate-600">
+        <h2 className="text-xl font-bold text-ink">Trip Workspace Settings</h2>
+        <p className="text-xs text-ink-body">
           Update trip dates, timezone, budget cap, or manage workspace lifecycle.
         </p>
       </div>
 
       {!isOwner ? (
-        <Card className="p-5 border-amber-200 bg-amber-50 text-xs text-amber-950 flex items-start gap-3">
-          <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0" />
+        <Card className="p-5 border-amber-300 border-l-4 border-l-amber-600 bg-amber-50 text-xs text-amber-950 flex items-start gap-3">
+          <ShieldAlert className="h-5 w-5 text-amber-700 shrink-0" />
           <div>
             <p className="font-bold">Read-Only View (Collaborator Role)</p>
             <p className="mt-0.5">

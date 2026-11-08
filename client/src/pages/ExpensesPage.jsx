@@ -44,12 +44,12 @@ const EXPENSE_CATEGORIES = [
 ];
 
 const CHART_COLORS = [
-  '#0f766e',
-  '#0f172a',
-  '#d97706',
-  '#0284c7',
+  '#0F766E',
+  '#142C3A',
+  '#F4C95D',
+  '#F27A62',
   '#059669',
-  '#64748b',
+  '#596D78',
 ];
 
 function computeLocalEqualPreview(amountMinor, participantIds) {
@@ -355,10 +355,10 @@ export function ExpensesPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold text-navy-900">
-            Financial Ledger, Splits & Settlements
+          <h2 className="text-xl font-bold text-ink">
+            Financial Ledger, Splits &amp; Settlements
           </h2>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-ink-body">
             Single authoritative ledger in integer paise (INR). Planned expenses inform
             estimates; only paid expenses generate settlements.
           </p>
@@ -374,7 +374,7 @@ export function ExpensesPage() {
               setSimOpen(true);
             }}
           >
-            <FlaskConical className="h-4 w-4 text-teal-700" />
+            <FlaskConical className="h-4 w-4 text-[#0F766E]" />
             What-If Simulator
           </Button>
           <Button onClick={openCreateModal} disabled={!memberDataReady}>
@@ -385,12 +385,12 @@ export function ExpensesPage() {
       </div>
 
       {expensesQuery.isLoading ? (
-        <p role="status" className="text-sm text-slate-600">
+        <p role="status" className="text-sm text-ink-body">
           Loading the latest expenses and trip participants…
         </p>
       ) : expensesQuery.isError ? (
-        <Card role="alert" className="p-4 space-y-3">
-          <p className="text-sm text-rose-700">Could not load the latest expenses and participants. Please retry before adding an expense.</p>
+        <Card role="alert" className="p-4 space-y-3 border-rose-200 bg-rose-50">
+          <p className="text-sm font-medium text-rose-800">Could not load the latest expenses and participants. Please retry before adding an expense.</p>
           <Button variant="secondary" onClick={() => expensesQuery.refetch()}>Retry loading expenses</Button>
         </Card>
       ) : null}
@@ -398,37 +398,51 @@ export function ExpensesPage() {
       {/* Top Financial Summary Strip */}
       {summary ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="p-4">
-            <p className="text-xs font-medium text-slate-500">Trip Total Estimate</p>
-            <p className="mt-1.5 text-2xl font-bold text-navy-900 tabular-nums">
+          <Card className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-ink-body">Trip Total Estimate</p>
+              <Badge variant="neutral">Combined</Badge>
+            </div>
+            <p className="mt-2 text-2xl font-extrabold text-ink tabular-nums">
               {formatINR(summary.tripTotalEstimatedMinor)}
             </p>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-ink-muted tabular-nums">
               {summary.paidCount} paid + {summary.plannedCount} planned
             </p>
           </Card>
 
-          <Card className="p-4">
-            <p className="text-xs font-medium text-slate-500">Total Paid Out</p>
-            <p className="mt-1.5 text-2xl font-bold text-emerald-700 tabular-nums">
+          <Card className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-ink-body">Total Paid Out</p>
+              <Badge variant="emerald">Paid</Badge>
+            </div>
+            <p className="mt-2 text-2xl font-extrabold text-emerald-700 tabular-nums">
               {formatINR(summary.tripTotalPaidMinor)}
             </p>
-            <p className="mt-1 text-xs text-slate-500">Included in settlements</p>
+            <p className="mt-1 text-xs text-ink-muted">Included in settlements</p>
           </Card>
 
-          <Card className="p-4">
-            <p className="text-xs font-medium text-slate-500">Remaining Planned</p>
-            <p className="mt-1.5 text-2xl font-bold text-teal-700 tabular-nums">
+          <Card className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-ink-body">Remaining Planned</p>
+              <Badge variant="teal">Planned</Badge>
+            </div>
+            <p className="mt-2 text-2xl font-extrabold text-[#0F766E] tabular-nums">
               {formatINR(summary.remainingEstimatedMinor)}
             </p>
-            <p className="mt-1 text-xs text-slate-500">Excluded from settlements</p>
+            <p className="mt-1 text-xs text-ink-muted">Excluded from settlements</p>
           </Card>
 
-          <Card className="p-4">
-            <p className="text-xs font-medium text-slate-500">Trip Budget Variance</p>
+          <Card className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-ink-body">Trip Budget Variance</p>
+              <Badge variant={summary.isOverBudget ? 'rose' : 'sunshine'}>
+                {summary.isOverBudget ? 'Over Cap' : 'Budget'}
+              </Badge>
+            </div>
             <p
-              className={`mt-1.5 text-2xl font-bold tabular-nums ${
-                summary.isOverBudget ? 'text-rose-600' : 'text-navy-900'
+              className={`mt-2 text-2xl font-extrabold tabular-nums ${
+                summary.isOverBudget ? 'text-rose-700' : 'text-ink'
               }`}
             >
               {summary.hasBudget
@@ -437,7 +451,7 @@ export function ExpensesPage() {
                   : `+${formatINR(summary.budgetDifferenceMinor)}`
                 : 'No cap'}
             </p>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-ink-muted tabular-nums">
               {summary.hasBudget
                 ? `Budget cap: ${formatINR(summary.budgetLimitMinor)}`
                 : 'Set cap in Trip Settings'}
@@ -448,14 +462,14 @@ export function ExpensesPage() {
 
       {/* Per-Person Estimates + Paid-Only Settlements + Category Chart */}
       {summary ? (
-        <div className="grid gap-6 lg:grid-cols-12">
+        <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
           {/* Per-person breakdown table */}
-          <Card className="p-5 lg:col-span-7 space-y-4">
+          <Card className="min-w-0 p-5 sm:p-6 lg:col-span-7 space-y-4">
             <div>
-              <h3 className="text-base font-bold text-navy-900">
-                Per-Person Estimated Cost & Paid Net Balance
+              <h3 className="text-base font-bold text-ink">
+                Per-Person Estimated Cost &amp; Paid Net Balance
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-ink-body">
                 Estimated total = member&apos;s share of planned + paid items. Net balance =
                 paid out minus paid share.
               </p>
@@ -464,40 +478,50 @@ export function ExpensesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-200 text-slate-500">
+                  <tr className="border-b border-canvas-border text-ink-body">
                     <th className="py-2 pr-2 font-semibold">Participant</th>
-                    <th className="py-2 px-2 font-semibold text-right">Planned</th>
-                    <th className="py-2 px-2 font-semibold text-right">Paid Share</th>
-                    <th className="py-2 px-2 font-semibold text-right">Est. Total</th>
-                    <th className="py-2 px-2 font-semibold text-right">Paid Out</th>
-                    <th className="py-2 pl-2 font-semibold text-right">Net Balance</th>
+                    <th className="hidden sm:table-cell py-2 px-2 font-semibold text-right whitespace-nowrap">
+                      Planned
+                    </th>
+                    <th className="hidden sm:table-cell py-2 px-2 font-semibold text-right whitespace-nowrap">
+                      Paid Share
+                    </th>
+                    <th className="py-2 px-2 font-semibold text-right whitespace-nowrap">
+                      Est. Total
+                    </th>
+                    <th className="py-2 px-2 font-semibold text-right whitespace-nowrap">
+                      Paid Out
+                    </th>
+                    <th className="py-2 pl-2 font-semibold text-right whitespace-nowrap">
+                      Net Balance
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-canvas-border/70">
                   {summary.participantSummaries.map((p) => (
                     <tr key={p.userId}>
-                      <td className="py-2.5 pr-2 font-semibold text-navy-900">
+                      <td className="py-2.5 pr-2 font-bold text-ink">
                         {p.displayName}
                       </td>
-                      <td className="py-2.5 px-2 text-right tabular-nums text-slate-600">
+                      <td className="hidden sm:table-cell py-2.5 px-2 text-right tabular-nums whitespace-nowrap text-ink-body">
                         {formatINR(p.plannedShareMinor)}
                       </td>
-                      <td className="py-2.5 px-2 text-right tabular-nums text-slate-700">
+                      <td className="hidden sm:table-cell py-2.5 px-2 text-right tabular-nums whitespace-nowrap text-ink">
                         {formatINR(p.paidShareMinor)}
                       </td>
-                      <td className="py-2.5 px-2 text-right font-bold tabular-nums text-navy-900">
+                      <td className="py-2.5 px-2 text-right font-bold tabular-nums whitespace-nowrap text-ink">
                         {formatINR(p.estimatedTotalMinor)}
                       </td>
-                      <td className="py-2.5 px-2 text-right tabular-nums text-emerald-700">
+                      <td className="py-2.5 px-2 text-right tabular-nums whitespace-nowrap font-medium text-emerald-700">
                         {formatINR(p.totalPaidOutMinor)}
                       </td>
                       <td
-                        className={`py-2.5 pl-2 text-right font-bold tabular-nums ${
+                        className={`py-2.5 pl-2 text-right font-bold tabular-nums whitespace-nowrap ${
                           p.netBalanceMinor > 0
                             ? 'text-emerald-700'
                             : p.netBalanceMinor < 0
-                              ? 'text-rose-600'
-                              : 'text-slate-500'
+                              ? 'text-rose-700'
+                              : 'text-ink-muted'
                         }`}
                       >
                         {p.netBalanceMinor > 0
@@ -513,16 +537,16 @@ export function ExpensesPage() {
 
           {/* Settlements + Category Chart */}
           <div className="min-w-0 lg:col-span-5 space-y-6">
-            <Card className="p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-navy-900">
+            <Card className="p-5 sm:p-6 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-base font-bold text-ink">
                   Settlement Recommendations
                 </h3>
                 <Badge variant="emerald">Paid Expenses Only</Badge>
               </div>
               {summary.settlements.transfers.length === 0 ? (
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <div className="rounded-xl border border-canvas-border bg-[#FAF9F5] p-4 text-xs text-ink-body flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" />
                   No outstanding settlement transfers required.
                 </div>
               ) : (
@@ -530,18 +554,18 @@ export function ExpensesPage() {
                   {summary.settlements.transfers.map((tx, idx) => (
                     <li
                       key={`${tx.fromUserId}-${tx.toUserId}-${idx}`}
-                      className="flex items-center justify-between rounded-xl border border-teal-200 bg-teal-50/70 px-3.5 py-2.5 text-xs"
+                      className="flex items-center justify-between gap-2 rounded-xl border border-[#BEE3DD] bg-[#F3FAF8] px-3.5 py-2.5 text-xs"
                     >
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-navy-900">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="font-bold text-ink truncate">
                           {tx.fromDisplayName}
                         </span>
-                        <ArrowRight className="h-3.5 w-3.5 text-teal-700" />
-                        <span className="font-bold text-navy-900">
+                        <ArrowRight className="h-3.5 w-3.5 text-[#0F766E] shrink-0" />
+                        <span className="font-bold text-ink truncate">
                           {tx.toDisplayName}
                         </span>
                       </div>
-                      <span className="font-bold text-teal-800 tabular-nums text-sm">
+                      <span className="shrink-0 font-extrabold text-[#0C5E57] tabular-nums text-sm">
                         {formatINR(tx.amountMinor)}
                       </span>
                     </li>
@@ -551,19 +575,20 @@ export function ExpensesPage() {
             </Card>
 
             {pieData.length > 0 ? (
-              <Card className="p-5 space-y-3">
-                <h3 className="text-sm font-bold text-navy-900">
+              <Card className="p-5 sm:p-6 space-y-3">
+                <h3 className="text-sm font-bold text-ink">
                   Spend by Category
                 </h3>
                 <div className="h-44 w-full" aria-label="Spend by category chart">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
+                        isAnimationActive={false}
                         data={pieData}
                         dataKey="value"
                         nameKey="name"
-                        innerRadius={38}
-                        outerRadius={66}
+                        innerRadius={40}
+                        outerRadius={68}
                         paddingAngle={2}
                       >
                         {pieData.map((entry, idx) => (
@@ -581,10 +606,10 @@ export function ExpensesPage() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <ul className="grid grid-cols-2 gap-1.5 text-xs">
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   {pieData.map((item, idx) => (
                     <li key={item.name} className="flex items-center justify-between gap-2">
-                      <span className="flex items-center gap-1.5 truncate text-slate-700">
+                      <span className="flex items-center gap-1.5 truncate text-ink-body">
                         <span
                           className="h-2.5 w-2.5 rounded-full shrink-0"
                           style={{
@@ -593,7 +618,7 @@ export function ExpensesPage() {
                         />
                         {item.name}
                       </span>
-                      <span className="font-semibold tabular-nums text-navy-900">
+                      <span className="font-bold tabular-nums text-ink">
                         {formatINR(item.totalMinor)}
                       </span>
                     </li>
@@ -606,15 +631,15 @@ export function ExpensesPage() {
       ) : null}
 
       {/* Ledger Filters */}
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-canvas-border bg-white p-3">
-        <span className="text-xs font-semibold text-slate-500">Filter ledger:</span>
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-canvas-border bg-white p-3.5 shadow-card">
+        <span className="text-xs font-semibold text-ink-muted">Filter ledger:</span>
         <select
           aria-label="Filter expense status"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+          className="min-h-[36px] rounded-xl border border-[#D4DDD9] bg-white px-3 py-1.5 text-xs font-medium text-ink focus:border-[#0F766E] focus:outline-none"
         >
-          <option value="">Planned & Paid</option>
+          <option value="">Planned &amp; Paid</option>
           <option value="planned">Planned Only</option>
           <option value="paid">Paid Only</option>
         </select>
@@ -623,7 +648,7 @@ export function ExpensesPage() {
           aria-label="Filter expense category"
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+          className="min-h-[36px] rounded-xl border border-[#D4DDD9] bg-white px-3 py-1.5 text-xs font-medium text-ink focus:border-[#0F766E] focus:outline-none"
         >
           <option value="">All Categories</option>
           {EXPENSE_CATEGORIES.map((c) => (
@@ -655,7 +680,7 @@ export function ExpensesPage() {
       ) : (
         <div className="space-y-3">
           {expenses.map((exp) => (
-            <Card key={exp.id} className="p-4 sm:p-5">
+            <Card key={exp.id} className="p-4 sm:p-5 hover:border-[#0F766E]/40">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="space-y-2 flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -679,13 +704,13 @@ export function ExpensesPage() {
                   </div>
 
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <h3 className="text-base font-bold text-navy-900">{exp.title}</h3>
-                    <span className="text-lg font-bold text-navy-900 tabular-nums">
+                    <h3 className="text-base font-bold text-ink">{exp.title}</h3>
+                    <span className="text-lg font-extrabold text-ink tabular-nums">
                       {formatINR(exp.amountMinor)}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-ink-body">
                     {formatDate(exp.expenseDate, trip.timezone)}
                     {exp.status === 'paid' && exp.paidByUserId
                       ? ` • Paid by ${exp.paidByUserId.displayName || 'Member'}`
@@ -693,7 +718,7 @@ export function ExpensesPage() {
                   </p>
 
                   {exp.description ? (
-                    <p className="text-xs text-slate-600">{exp.description}</p>
+                    <p className="text-xs text-ink-body">{exp.description}</p>
                   ) : null}
 
                   <div className="flex flex-wrap gap-1.5 pt-1">
@@ -708,7 +733,7 @@ export function ExpensesPage() {
                       return (
                         <span
                           key={uid}
-                          className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 tabular-nums"
+                          className="rounded-lg border border-canvas-border bg-[#FAF9F5] px-2.5 py-0.5 text-[11px] font-semibold text-ink tabular-nums"
                         >
                           {name}: {formatINR(share.shareMinor)}
                         </span>
@@ -731,7 +756,7 @@ export function ExpensesPage() {
                     variant="ghost"
                     aria-label={`Delete ${exp.title}`}
                     onClick={() => setDeleteTarget(exp)}
-                    className="text-rose-600 hover:bg-rose-50"
+                    className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -754,7 +779,7 @@ export function ExpensesPage() {
           {formError ? (
             <div
               role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-800"
+              className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-800"
             >
               {formError}
             </div>
@@ -839,7 +864,7 @@ export function ExpensesPage() {
                 </select>
               </FormField>
             ) : (
-              <div className="flex items-end pb-2 text-xs text-slate-500">
+              <div className="flex items-end pb-2 text-xs text-ink-muted">
                 Planned expenses contribute to per-person estimates without creating debts.
               </div>
             )}
@@ -857,19 +882,19 @@ export function ExpensesPage() {
           </FormField>
 
           {/* Split Mode & Participant Shares */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+          <div className="rounded-2xl border border-canvas-border bg-[#FAF9F5] p-4 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs font-bold text-navy-900">
+              <span className="text-xs font-bold text-ink">
                 Split Configuration
               </span>
-              <div className="inline-flex rounded-lg border border-slate-300 bg-white p-0.5 text-xs">
+              <div className="inline-flex rounded-xl border border-[#D4DDD9] bg-white p-0.5 text-xs">
                 <button
                   type="button"
                   onClick={() => setShareMode('equal')}
-                  className={`rounded-md px-3 py-1 font-medium ${
+                  className={`rounded-lg px-3 py-1.5 font-semibold transition-colors duration-150 ${
                     shareMode === 'equal'
-                      ? 'bg-navy-900 text-white'
-                      : 'text-slate-700'
+                      ? 'bg-[#0F766E] text-white'
+                      : 'text-ink-body hover:text-ink'
                   }`}
                 >
                   Equal Split
@@ -877,10 +902,10 @@ export function ExpensesPage() {
                 <button
                   type="button"
                   onClick={() => setShareMode('custom')}
-                  className={`rounded-md px-3 py-1 font-medium ${
+                  className={`rounded-lg px-3 py-1.5 font-semibold transition-colors duration-150 ${
                     shareMode === 'custom'
-                      ? 'bg-navy-900 text-white'
-                      : 'text-slate-700'
+                      ? 'bg-[#0F766E] text-white'
+                      : 'text-ink-body hover:text-ink'
                   }`}
                 >
                   Custom Split
@@ -896,27 +921,27 @@ export function ExpensesPage() {
                 return (
                   <div
                     key={m.userId}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-canvas-border bg-white px-3 py-2"
                   >
-                    <label className="flex items-center gap-2 text-xs font-medium text-navy-900 cursor-pointer">
+                    <label className="flex items-center gap-2.5 text-xs font-semibold text-ink cursor-pointer">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleParticipant(m.userId)}
-                        className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-600"
+                        className="h-4 w-4 rounded border-[#CBD6D2] text-[#0F766E] focus:ring-[#0F766E]"
                       />
                       {m.displayName}
                     </label>
 
                     {shareMode === 'equal' ? (
-                      <span className="text-xs font-semibold tabular-nums text-slate-700">
+                      <span className="text-xs font-bold tabular-nums text-ink">
                         {isSelected && eqShare
                           ? formatINR(eqShare.shareMinor)
                           : '₹0.00'}
                       </span>
                     ) : isSelected ? (
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs text-slate-500">₹</span>
+                        <span className="text-xs text-ink-muted">₹</span>
                         <input
                           type="text"
                           inputMode="decimal"
@@ -929,11 +954,11 @@ export function ExpensesPage() {
                             }))
                           }
                           placeholder="0.00"
-                          className="w-24 rounded-md border border-slate-300 px-2 py-1 text-right text-xs tabular-nums"
+                          className="w-24 rounded-lg border border-[#D4DDD9] px-2.5 py-1.5 text-right text-xs tabular-nums focus:border-[#0F766E] focus:outline-none"
                         />
                       </div>
                     ) : (
-                      <span className="text-xs text-slate-400">Excluded</span>
+                      <span className="text-xs text-ink-muted">Excluded</span>
                     )}
                   </div>
                 );
@@ -942,12 +967,12 @@ export function ExpensesPage() {
 
             {shareMode === 'custom' && parsedAmountMinor ? (
               <div className="flex items-center justify-between text-xs pt-1">
-                <span className="text-slate-600">Custom Shares Total:</span>
+                <span className="text-ink-body">Custom Shares Total:</span>
                 <span
                   className={`font-bold tabular-nums ${
                     customSumMinor === parsedAmountMinor
                       ? 'text-emerald-700'
-                      : 'text-rose-600'
+                      : 'text-rose-700'
                   }`}
                 >
                   {customSumMinor !== null ? formatINR(customSumMinor) : 'Invalid'} /{' '}
@@ -957,7 +982,7 @@ export function ExpensesPage() {
             ) : null}
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-2 border-t border-canvas-border">
             <Button variant="secondary" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
@@ -979,14 +1004,13 @@ export function ExpensesPage() {
       <Modal
         isOpen={simOpen}
         onClose={() => setSimOpen(false)}
-        title="What-If Budget Simulator (Preview Only)"
+        title="What-If Budget Simulator (Preview — Not Saved)"
         description="Simulate adding or modifying a planned expense without writing to the database."
         maxWidth="max-w-xl"
       >
         <div className="space-y-4">
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-950">
-            Preview Mode: Simulations use the real backend split engine without saving
-            any changes to MongoDB.
+          <div className="rounded-xl border border-sunshine-border bg-sunshine-soft px-3.5 py-2.5 text-xs font-medium text-sunshine-ink">
+            Preview — not saved: Simulations run on the backend split engine without changing your stored trip ledger.
           </div>
 
           <form onSubmit={handleRunSimulation} className="space-y-4">
@@ -1039,7 +1063,7 @@ export function ExpensesPage() {
             </div>
 
             <div className="space-y-1.5">
-              <span className="block text-xs font-semibold text-slate-700">
+              <span className="block text-xs font-semibold text-ink">
                 Participants Included
               </span>
               <div className="flex flex-wrap gap-2">
@@ -1056,10 +1080,10 @@ export function ExpensesPage() {
                             : [...prev, m.userId]
                         )
                       }
-                      className={`rounded-lg border px-2.5 py-1 text-xs font-medium ${
+                      className={`min-h-[36px] rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors duration-150 ${
                         checked
-                          ? 'border-teal-600 bg-teal-50 text-teal-900'
-                          : 'border-slate-200 bg-white text-slate-600'
+                          ? 'border-[#0F766E] bg-[#E9F5F3] text-[#0C5E57]'
+                          : 'border-canvas-border bg-white text-ink-body hover:bg-canvas-subtle'
                       }`}
                     >
                       {m.displayName}
@@ -1076,10 +1100,13 @@ export function ExpensesPage() {
           </form>
 
           {simResult ? (
-            <div className="rounded-xl border border-teal-200 bg-teal-50/60 p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <Badge variant="amber">SIMULATION PREVIEW (UNSAVED)</Badge>
-                <span className="text-xs font-bold text-navy-900 tabular-nums">
+            <div className="rounded-2xl border border-sunshine-border bg-[#FFFDF7] p-4 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Badge variant="amber">SIMULATION PREVIEW (UNSAVED)</Badge>
+                  <Badge variant="sunshine">Preview — not saved</Badge>
+                </div>
+                <span className="text-xs font-bold text-ink tabular-nums">
                   Trip Delta:{' '}
                   {simResult.tripTotalDeltaMinor >= 0 ? '+' : ''}
                   {formatINR(simResult.tripTotalDeltaMinor)}
@@ -1087,49 +1114,51 @@ export function ExpensesPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="rounded-lg bg-white p-2.5 border border-slate-200">
-                  <span className="text-slate-500 block">Current Trip Est.</span>
-                  <span className="font-bold text-navy-900 tabular-nums">
+                <div className="rounded-xl bg-white p-3 border border-canvas-border">
+                  <span className="text-ink-muted block">Current Trip Est.</span>
+                  <span className="font-bold text-ink tabular-nums">
                     {formatINR(simResult.before.tripTotalEstimatedMinor)}
                   </span>
                 </div>
-                <div className="rounded-lg bg-white p-2.5 border border-teal-300">
-                  <span className="text-slate-500 block">Simulated Trip Est.</span>
-                  <span className="font-bold text-teal-800 tabular-nums">
+                <div className="rounded-xl bg-white p-3 border border-[#BEE3DD]">
+                  <span className="text-ink-muted block">Simulated Trip Est.</span>
+                  <span className="font-bold text-[#0C5E57] tabular-nums">
                     {formatINR(simResult.after.tripTotalEstimatedMinor)}
                   </span>
                 </div>
               </div>
 
-              <table className="w-full text-xs text-left">
-                <thead>
-                  <tr className="border-b border-teal-200 text-slate-600">
-                    <th className="py-1.5 font-semibold">Member</th>
-                    <th className="py-1.5 text-right font-semibold">Before</th>
-                    <th className="py-1.5 text-right font-semibold">After</th>
-                    <th className="py-1.5 text-right font-semibold">Delta</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-teal-100">
-                  {simResult.participantDeltas.map((row) => (
-                    <tr key={row.userId}>
-                      <td className="py-1.5 font-medium text-navy-900">
-                        {row.displayName}
-                      </td>
-                      <td className="py-1.5 text-right tabular-nums">
-                        {formatINR(row.beforeEstimatedMinor)}
-                      </td>
-                      <td className="py-1.5 text-right tabular-nums font-semibold">
-                        {formatINR(row.afterEstimatedMinor)}
-                      </td>
-                      <td className="py-1.5 text-right tabular-nums font-bold text-teal-800">
-                        {row.deltaMinor >= 0 ? '+' : ''}
-                        {formatINR(row.deltaMinor)}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead>
+                    <tr className="border-b border-canvas-border text-ink-body">
+                      <th className="py-1.5 font-semibold">Member</th>
+                      <th className="py-1.5 text-right font-semibold">Before</th>
+                      <th className="py-1.5 text-right font-semibold">After</th>
+                      <th className="py-1.5 text-right font-semibold">Delta</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-canvas-border/70">
+                    {simResult.participantDeltas.map((row) => (
+                      <tr key={row.userId}>
+                        <td className="py-1.5 font-semibold text-ink">
+                          {row.displayName}
+                        </td>
+                        <td className="py-1.5 text-right tabular-nums text-ink-body">
+                          {formatINR(row.beforeEstimatedMinor)}
+                        </td>
+                        <td className="py-1.5 text-right tabular-nums font-semibold text-ink">
+                          {formatINR(row.afterEstimatedMinor)}
+                        </td>
+                        <td className="py-1.5 text-right tabular-nums font-bold text-[#0C5E57]">
+                          {row.deltaMinor >= 0 ? '+' : ''}
+                          {formatINR(row.deltaMinor)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : null}
         </div>

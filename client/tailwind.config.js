@@ -5,23 +5,44 @@ export default {
     extend: {
       colors: {
         navy: {
-          50: '#f0f4f8',
-          100: '#d9e2ec',
-          200: '#bcccdc',
-          300: '#9fb3c8',
-          400: '#829ab1',
-          500: '#627d98',
-          600: '#486581',
-          700: '#334e68',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#080d1a',
+          50: '#f1f5f7',
+          100: '#dce5e9',
+          200: '#baccd4',
+          300: '#94aeb9',
+          400: '#6e8c99',
+          500: '#53717f',
+          600: '#485C66',
+          700: '#2E4957',
+          800: '#1D3949',
+          900: '#142C3A',
+          950: '#0D1E28',
+        },
+        ink: {
+          DEFAULT: '#142C3A',
+          body: '#485C66',
+          muted: '#596D78',
         },
         canvas: {
-          DEFAULT: '#FAF8F5',
-          subtle: '#F3F0EA',
-          border: '#E4DFD5',
+          DEFAULT: '#F7F6F2',
+          subtle: '#F1EFE9',
+          border: '#E4E9E7',
         },
+        coral: {
+          DEFAULT: '#F27A62',
+          soft: '#FDF0ED',
+          border: '#F7C6BC',
+          ink: '#8C2F1D',
+        },
+        sunshine: {
+          DEFAULT: '#F4C95D',
+          soft: '#FEF8E8',
+          border: '#F7DF9B',
+          ink: '#6B4B06',
+        },
+      },
+      boxShadow: {
+        card: '0 2px 10px -3px rgba(20, 44, 58, 0.06), 0 1px 3px -1px rgba(20, 44, 58, 0.04)',
+        'card-hover': '0 10px 24px -6px rgba(20, 44, 58, 0.10), 0 3px 8px -2px rgba(20, 44, 58, 0.05)',
       },
       fontFamily: {
         sans: [

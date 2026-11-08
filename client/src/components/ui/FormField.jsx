@@ -4,18 +4,18 @@ export function FormField({ label, htmlFor, error, hint, required, children }) {
       {label ? (
         <label
           htmlFor={htmlFor}
-          className="block text-sm font-medium text-slate-800"
+          className="block text-sm font-semibold text-ink"
         >
           {label}
-          {required ? <span className="ml-0.5 text-rose-600">*</span> : null}
+          {required ? <span className="ml-0.5 text-rose-700">*</span> : null}
         </label>
       ) : null}
       {children}
       {hint && !error ? (
-        <p className="text-xs text-slate-500">{hint}</p>
+        <p className="text-xs text-ink-muted">{hint}</p>
       ) : null}
       {error ? (
-        <p role="alert" className="text-xs font-medium text-rose-600">
+        <p role="alert" className="text-xs font-semibold text-rose-700">
           {error}
         </p>
       ) : null}
@@ -24,5 +24,5 @@ export function FormField({ label, htmlFor, error, hint, required, children }) {
 }
 
 export const inputClassName =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:bg-slate-50 disabled:text-slate-500';
+  'w-full min-h-[42px] rounded-xl border border-[#D4DDD9] bg-white px-3.5 py-2 text-sm text-ink placeholder:text-ink-muted/80 transition-colors duration-150 focus:border-[#0F766E] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 disabled:bg-canvas-subtle disabled:text-ink-muted';
 

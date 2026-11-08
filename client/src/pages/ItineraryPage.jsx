@@ -305,11 +305,12 @@ export function ItineraryPage() {
       {/* Header & Controls */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold text-navy-900">
+          <h2 className="text-xl font-bold text-ink">
             Chronological Itinerary
           </h2>
-          <p className="text-xs text-slate-600">
-            All times displayed in <span className="font-semibold">{trip.timezone}</span>.
+          <p className="text-xs text-ink-body">
+            All times displayed in{' '}
+            <span className="font-semibold text-ink">{trip.timezone}</span>.
             Overlapping non-cancelled activities are flagged automatically.
           </p>
         </div>
@@ -325,10 +326,10 @@ export function ItineraryPage() {
         <div
           role="alert"
           data-testid="conflict-alert-panel"
-          className="rounded-xl border border-amber-300 bg-amber-50 p-4 space-y-2.5"
+          className="rounded-2xl border border-amber-300 border-l-4 border-l-amber-600 bg-amber-50 p-4 space-y-2.5 shadow-card"
         >
           <div className="flex items-center gap-2 text-amber-950">
-            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
+            <AlertTriangle className="h-5 w-5 text-amber-700 shrink-0" />
             <h3 className="text-sm font-bold">
               {conflictReport.conflictCount} Schedule Conflict
               {conflictReport.conflictCount > 1 ? 's' : ''} Detected
@@ -345,15 +346,15 @@ export function ItineraryPage() {
       ) : null}
 
       {/* Filter Bar */}
-      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-canvas-border bg-white p-3">
-        <span className="text-xs font-semibold text-slate-500 mr-1">Filter by day:</span>
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-canvas-border bg-white p-3 shadow-card">
+        <span className="text-xs font-semibold text-ink-muted mr-1">Filter by day:</span>
         <button
           type="button"
           onClick={() => setDateFilter('')}
-          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`min-h-[36px] rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors duration-150 ${
             dateFilter === ''
-              ? 'bg-navy-900 text-white'
-              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              ? 'bg-[#0F766E] text-white shadow-sm'
+              : 'bg-canvas-subtle text-ink-body hover:bg-[#E7ECEA] hover:text-ink'
           }`}
         >
           All Days
@@ -363,10 +364,10 @@ export function ItineraryPage() {
             key={d}
             type="button"
             onClick={() => setDateFilter(d)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`min-h-[36px] rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors duration-150 tabular-nums ${
               dateFilter === d
-                ? 'bg-navy-900 text-white'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-[#0F766E] text-white shadow-sm'
+                : 'bg-canvas-subtle text-ink-body hover:bg-[#E7ECEA] hover:text-ink'
             }`}
           >
             {formatDate(`${d}T12:00:00Z`, 'UTC')}
@@ -381,7 +382,7 @@ export function ItineraryPage() {
             id="activity-status-filter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            className="min-h-[36px] rounded-xl border border-[#D4DDD9] bg-white px-3 py-1.5 text-xs font-medium text-ink focus:border-[#0F766E] focus:outline-none"
           >
             <option value="">All statuses</option>
             <option value="planned">Planned</option>
@@ -391,7 +392,7 @@ export function ItineraryPage() {
         </div>
       </div>
 
-      {/* Timeline Content */}
+      {/* Vertical Timeline Content */}
       {activitiesQuery.isLoading ? (
         <div className="space-y-3">
           <Skeleton className="h-28" />
@@ -410,131 +411,175 @@ export function ItineraryPage() {
           }
         />
       ) : (
-        <div className="space-y-6">
-          {groupedByDate.map(([dateKey, dayActivities]) => (
-            <section key={dateKey} className="space-y-3">
-              <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-                <CalendarDays className="h-4 w-4 text-teal-700" />
-                <h3 className="text-sm font-bold text-navy-900">
-                  {formatDate(`${dateKey}T12:00:00Z`, 'UTC')}
-                </h3>
-                <span className="text-xs text-slate-500">
-                  ({dayActivities.length}{' '}
-                  {dayActivities.length === 1 ? 'activity' : 'activities'})
+        <div className="space-y-8">
+          {groupedByDate.map(([dateKey, dayActivities], dayIdx) => (
+            <section key={dateKey} className="space-y-4">
+              {/* Day Separator */}
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-canvas-border bg-white px-4 py-2.5 shadow-card">
+                <div className="flex items-center gap-2.5">
+                  <span className="inline-flex h-7 items-center rounded-lg bg-[#E9F5F3] px-2.5 text-xs font-bold text-[#0C5E57] border border-[#BEE3DD] tabular-nums">
+                    Day {dayIdx + 1}
+                  </span>
+                  <h3 className="text-sm font-bold text-ink tabular-nums">
+                    {formatDate(`${dateKey}T12:00:00Z`, 'UTC')}
+                  </h3>
+                  <span className="text-xs font-medium text-ink-muted">
+                    ({dayActivities.length}{' '}
+                    {dayActivities.length === 1 ? 'activity' : 'activities'})
+                  </span>
+                </div>
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-ink-muted">
+                  <Clock className="h-3 w-3 text-[#0F766E]" />
+                  {trip.timezone}
                 </span>
               </div>
 
-              <div className="space-y-3">
+              {/* Vertical Rail & Activity Cards */}
+              <div className="relative pl-6 sm:pl-8 space-y-4">
+                <div
+                  aria-hidden="true"
+                  className="absolute left-[11px] top-4 bottom-4 w-0.5 bg-[#D4E0DC]"
+                />
+
                 {dayActivities.map((act) => {
                   const isOvernight = act.localStartDate !== act.localEndDate;
+                  const dotStyle = act.hasConflict
+                    ? 'border-amber-600 bg-amber-100 ring-4 ring-amber-50'
+                    : act.status === 'cancelled'
+                      ? 'border-slate-400 bg-slate-100'
+                      : 'border-[#0F766E] bg-white ring-4 ring-[#E9F5F3]';
+
                   return (
-                    <Card
-                      key={act.id}
-                      data-testid={`activity-card-${act.id}`}
-                      className={`p-4 sm:p-5 transition-colors ${
-                        act.hasConflict
-                          ? 'border-amber-400 bg-amber-50/40 ring-1 ring-amber-300'
-                          : ''
-                      } ${act.status === 'cancelled' ? 'opacity-70' : ''}`}
-                    >
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="space-y-2 flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="inline-flex items-center gap-1 rounded-md bg-navy-900 px-2.5 py-1 text-xs font-semibold text-white tabular-nums">
-                              <Clock className="h-3.5 w-3.5 text-teal-300" />
-                              {formatTime(act.startAt, trip.timezone)} –{' '}
-                              {formatTime(act.endAt, trip.timezone)}
-                              {isOvernight ? ' (+1d)' : ''}
-                            </span>
-                            <StatusBadge status={act.status} />
-                            <Badge variant="neutral" className="capitalize">
-                              {act.category}
-                            </Badge>
-                            {act.hasConflict ? (
-                              <Badge variant="amber">
-                                <AlertTriangle className="h-3 w-3" />
-                                Time Conflict
+                    <div key={act.id} className="relative">
+                      {/* Timeline Node Marker */}
+                      <span
+                        aria-hidden="true"
+                        className={`absolute -left-6 sm:-left-8 top-5 flex h-6 w-6 items-center justify-center rounded-full border-2 ${dotStyle}`}
+                      >
+                        <span
+                          className={`h-2 w-2 rounded-full ${
+                            act.hasConflict
+                              ? 'bg-amber-600'
+                              : act.status === 'cancelled'
+                                ? 'bg-slate-400'
+                                : 'bg-[#0F766E]'
+                          }`}
+                        />
+                      </span>
+
+                      <Card
+                        data-testid={`activity-card-${act.id}`}
+                        className={`p-4 sm:p-5 transition-all duration-150 ${
+                          act.hasConflict
+                            ? 'border-amber-400 bg-amber-50/40 ring-1 ring-amber-300'
+                            : 'hover:border-[#0F766E]/45 hover:shadow-card-hover'
+                        } ${act.status === 'cancelled' ? 'opacity-70' : ''}`}
+                      >
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="space-y-2.5 flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span
+                                className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-bold tabular-nums ${
+                                  act.hasConflict
+                                    ? 'border-amber-300 bg-amber-100 text-amber-950'
+                                    : 'border-[#BEE3DD] bg-[#E9F5F3] text-[#0C5E57]'
+                                }`}
+                              >
+                                <Clock className="h-3.5 w-3.5 shrink-0" />
+                                {formatTime(act.startAt, trip.timezone)} –{' '}
+                                {formatTime(act.endAt, trip.timezone)}
+                                {isOvernight ? ' (+1d)' : ''}
+                              </span>
+                              <StatusBadge status={act.status} />
+                              <Badge variant="neutral" className="capitalize">
+                                {act.category}
                               </Badge>
+                              {act.hasConflict ? (
+                                <Badge variant="amber">
+                                  <AlertTriangle className="h-3 w-3" />
+                                  Time Conflict
+                                </Badge>
+                              ) : null}
+                              {act.linkedExpenseId ? (
+                                <Badge variant="teal">
+                                  <ReceiptIndianRupee className="h-3 w-3" />
+                                  {formatINR(act.linkedExpenseId.amountMinor)} (
+                                  {act.linkedExpenseId.status})
+                                </Badge>
+                              ) : null}
+                            </div>
+
+                            <h4
+                              className={`text-base font-bold text-ink ${
+                                act.status === 'cancelled' ? 'line-through' : ''
+                              }`}
+                            >
+                              {act.title}
+                            </h4>
+
+                            {act.location ? (
+                              <p className="flex items-center gap-1.5 text-xs font-medium text-ink-body">
+                                <MapPin className="h-3.5 w-3.5 text-[#0F766E] shrink-0" />
+                                <span>{act.location}</span>
+                              </p>
                             ) : null}
-                            {act.linkedExpenseId ? (
-                              <Badge variant="teal">
-                                <ReceiptIndianRupee className="h-3 w-3" />
-                                {formatINR(act.linkedExpenseId.amountMinor)} (
-                                {act.linkedExpenseId.status})
-                              </Badge>
+
+                            {act.description ? (
+                              <p className="text-xs text-ink-body leading-relaxed">
+                                {act.description}
+                              </p>
+                            ) : null}
+
+                            {act.assignedParticipantIds?.length > 0 ? (
+                              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                                <span className="text-[11px] font-medium text-ink-muted">
+                                  Participants:
+                                </span>
+                                {act.assignedParticipantIds.map((pid) => (
+                                  <span
+                                    key={pid}
+                                    className="rounded-md border border-canvas-border bg-[#FAF9F5] px-2 py-0.5 text-[11px] font-medium text-ink"
+                                  >
+                                    {memberNameById.get(String(pid)) || 'Member'}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : null}
+
+                            {act.hasConflict ? (
+                              <div className="mt-2 rounded-xl border border-amber-300 bg-amber-100/80 px-3 py-2 text-xs text-amber-950">
+                                {act.conflicts.map((c) => (
+                                  <p key={c.conflictingActivityId}>
+                                    <span className="font-bold">Conflict:</span>{' '}
+                                    {c.explanation}
+                                  </p>
+                                ))}
+                              </div>
                             ) : null}
                           </div>
 
-                          <h4
-                            className={`text-base font-bold text-navy-900 ${
-                              act.status === 'cancelled' ? 'line-through' : ''
-                            }`}
-                          >
-                            {act.title}
-                          </h4>
-
-                          {act.location ? (
-                            <p className="flex items-center gap-1.5 text-xs text-slate-600">
-                              <MapPin className="h-3.5 w-3.5 text-teal-600 shrink-0" />
-                              {act.location}
-                            </p>
-                          ) : null}
-
-                          {act.description ? (
-                            <p className="text-xs text-slate-600 leading-relaxed">
-                              {act.description}
-                            </p>
-                          ) : null}
-
-                          {act.assignedParticipantIds?.length > 0 ? (
-                            <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                              <span className="text-[11px] font-medium text-slate-500">
-                                Participants:
-                              </span>
-                              {act.assignedParticipantIds.map((pid) => (
-                                <span
-                                  key={pid}
-                                  className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700"
-                                >
-                                  {memberNameById.get(String(pid)) || 'Member'}
-                                </span>
-                              ))}
-                            </div>
-                          ) : null}
-
-                          {act.hasConflict ? (
-                            <div className="mt-2 rounded-lg border border-amber-300 bg-amber-100/70 px-3 py-2 text-xs text-amber-950">
-                              {act.conflicts.map((c) => (
-                                <p key={c.conflictingActivityId}>
-                                  <span className="font-semibold">Conflict:</span>{' '}
-                                  {c.explanation}
-                                </p>
-                              ))}
-                            </div>
-                          ) : null}
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Button
+                              size="sm"
+                              variant={act.hasConflict ? 'primary' : 'secondary'}
+                              onClick={() => openEditModal(act)}
+                            >
+                              <Edit2 className="h-3.5 w-3.5" />
+                              {act.hasConflict ? 'Adjust Time' : 'Edit'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              aria-label={`Delete ${act.title}`}
+                              onClick={() => setDeleteTarget(act)}
+                              className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => openEditModal(act)}
-                          >
-                            <Edit2 className="h-3.5 w-3.5" />
-                            {act.hasConflict ? 'Adjust Time' : 'Edit'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            aria-label={`Delete ${act.title}`}
-                            onClick={() => setDeleteTarget(act)}
-                            className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
+                      </Card>
+                    </div>
                   );
                 })}
               </div>
