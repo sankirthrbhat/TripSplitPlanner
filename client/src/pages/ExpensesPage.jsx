@@ -157,6 +157,9 @@ export function ExpensesPage() {
 
   const expenses = expensesQuery.data?.expenses || [];
   const summary = expensesQuery.data?.financialSummary;
+  // Cached trip metadata can predate a collaborator joining. Wait for the
+  // authoritative ledger roster before initializing any participant selection.
+  const memberDataReady = Boolean(summary) && !expensesQuery.isFetching;
 
   const liveMembers = useMemo(
     () =>
@@ -364,20 +367,33 @@ export function ExpensesPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="secondary"
+            disabled={!memberDataReady}
             onClick={() => {
               setSimResult(null);
+              setSimParticipantIds(liveMembers.map((member) => member.userId));
               setSimOpen(true);
             }}
           >
             <FlaskConical className="h-4 w-4 text-teal-700" />
             What-If Simulator
           </Button>
-          <Button onClick={openCreateModal}>
+          <Button onClick={openCreateModal} disabled={!memberDataReady}>
             <Plus className="h-4 w-4" />
             Add Expense
           </Button>
         </div>
       </div>
+
+      {expensesQuery.isLoading ? (
+        <p role="status" className="text-sm text-slate-600">
+          Loading the latest expenses and trip participants…
+        </p>
+      ) : expensesQuery.isError ? (
+        <Card role="alert" className="p-4 space-y-3">
+          <p className="text-sm text-rose-700">Could not load the latest expenses and participants. Please retry before adding an expense.</p>
+          <Button variant="secondary" onClick={() => expensesQuery.refetch()}>Retry loading expenses</Button>
+        </Card>
+      ) : null}
 
       {/* Top Financial Summary Strip */}
       {summary ? (
@@ -630,7 +646,7 @@ export function ExpensesPage() {
           title="No expenses recorded yet"
           description="Add planned budgets or paid receipts to compute exact per-person estimates and settlements."
           action={
-            <Button onClick={openCreateModal}>
+            <Button onClick={openCreateModal} disabled={!memberDataReady}>
               <Plus className="h-4 w-4" />
               Record First Expense
             </Button>
@@ -1027,7 +1043,7 @@ export function ExpensesPage() {
                 Participants Included
               </span>
               <div className="flex flex-wrap gap-2">
-                {trip.members.map((m) => {
+                {liveMembers.map((m) => {
                   const checked = simParticipantIds.includes(m.userId);
                   return (
                     <button
