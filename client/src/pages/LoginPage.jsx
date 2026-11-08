@@ -15,13 +15,6 @@ const loginFormSchema = z.object({
   password: z.string().min(1, 'Password is required.'),
 });
 
-const DEMO_ACCOUNTS = [
-  { name: 'Aarav (Owner)', email: 'aarav@tripsplit.demo' },
-  { name: 'Diya (Member)', email: 'diya@tripsplit.demo' },
-  { name: 'Kabir (Member)', email: 'kabir@tripsplit.demo' },
-  { name: 'Meera (Member)', email: 'meera@tripsplit.demo' },
-];
-
 export function LoginPage() {
   const { login } = useAuth();
   const toast = useToast();
@@ -33,7 +26,6 @@ export function LoginPage() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginFormSchema),
@@ -52,11 +44,6 @@ export function LoginPage() {
     } catch (err) {
       setServerError(err.message || 'Invalid credentials.');
     }
-  };
-
-  const fillDemoAccount = (email) => {
-    setValue('email', email, { shouldValidate: true });
-    setValue('password', 'DemoPassword123', { shouldValidate: true });
   };
 
   return (
@@ -123,24 +110,6 @@ export function LoginPage() {
               {isSubmitting ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-
-          <div className="mt-6 border-t border-canvas-border pt-4">
-            <p className="text-xs font-medium text-ink-muted mb-2">
-              Demo Evaluation Quick-Fill (after running <code className="font-mono">npm run seed:demo</code>):
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {DEMO_ACCOUNTS.map((acct) => (
-                <button
-                  key={acct.email}
-                  type="button"
-                  onClick={() => fillDemoAccount(acct.email)}
-                  className="min-h-[38px] rounded-xl border border-canvas-border bg-[#FAF9F5] px-2.5 py-1.5 text-left text-xs font-semibold text-ink transition-colors duration-150 hover:bg-[#E9F5F3] hover:border-[#BEE3DD] hover:text-[#0C5E57]"
-                >
-                  {acct.name}
-                </button>
-              ))}
-            </div>
-          </div>
 
           <p className="mt-6 text-center text-xs text-ink-body">
             New to TripSplit Planner?{' '}
